@@ -91,7 +91,7 @@ export async function transferFromPermit(permit2Contract: Contract, reward: Perm
         buttonController.showMakeClaim();
       } else {
         const { errorname, message } = decodeError(permit2Contract, e);
-        console.error(`Error in permitTransferFrom: ${errorname} [ ${message} ]`);
+        console.error(`Error in permitTransferFrom: ${errorname} ${message}`);
         errorToast(e, e.reason);
       }
     }

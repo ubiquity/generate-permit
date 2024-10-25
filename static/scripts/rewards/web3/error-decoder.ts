@@ -8,13 +8,15 @@ export function decodeError(contract: Contract, err: MetaMaskError) {
   const res = iface.decodeErrorResult(selecter, errordata);
   const errorfragments = iface.getError(selecter);
 
-  let message;
+  let message = "";
   if (errorfragments.inputs.length > 0) {
+    message += "[ ";
     message = errorfragments.inputs
       .map((input, index) => {
         return `${input.name}: ${res[index].toString()}`;
       })
       .join(", ");
+    message += " ]";
   }
 
   return {

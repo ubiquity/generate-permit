@@ -73,7 +73,7 @@ export function claimErc721PermitHandler(reward: ERC721Permit) {
           buttonController.showMakeClaim();
         } else {
           const { errorname, message } = decodeError(nftContract, e);
-          console.error(`Error claiming NFT: ${errorname} [ ${message} ]`);
+          console.error(`Error claiming NFT: ${errorname} ${message}`);
           errorToast(e, e.reason);
         }
       } else if (typeof error === "string") {
