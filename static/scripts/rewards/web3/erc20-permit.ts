@@ -9,6 +9,7 @@ import { buttonController, getMakeClaimButton, viewClaimButton } from "../button
 import { toaster, errorToast, MetaMaskError } from "../toaster";
 import { connectWallet } from "./connect-wallet";
 import { convertToNetworkId } from "./use-rpc-handler";
+import { decodeError } from "./error-decoder";
 
 export async function fetchTreasury(permit: Permit): Promise<{ balance: BigNumber; allowance: BigNumber; decimals: number; symbol: string }> {
   let balance: BigNumber, allowance: BigNumber, decimals: number, symbol: string;
@@ -89,8 +90,8 @@ export async function transferFromPermit(permit2Contract: Contract, reward: Perm
         buttonController.hideLoader();
         buttonController.showMakeClaim();
       } else {
-        // Handle other errors
-        console.error("Error in permitTransferFrom:", e);
+        const { errorname, message } = decodeError(permit2Contract, e);
+        console.error(`Error in permitTransferFrom: ${errorname} [ ${message} ]`);
         errorToast(e, e.reason);
       }
     }
