@@ -6,7 +6,7 @@ import { app } from "../app-state";
 import { errorToast, MetaMaskError, toaster } from "../toaster";
 import { buttonController, getMakeClaimButton } from "../button-controller";
 import { connectWallet } from "./connect-wallet";
-import { decodeError } from "ethers-decode-error";
+import { decodeError } from "@ariesgun/ethers-decode-error";
 
 export function claimErc721PermitHandler(reward: ERC721Permit) {
   return async function claimHandler() {

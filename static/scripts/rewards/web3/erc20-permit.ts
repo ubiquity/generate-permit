@@ -9,7 +9,7 @@ import { buttonController, getMakeClaimButton, viewClaimButton } from "../button
 import { toaster, errorToast, MetaMaskError } from "../toaster";
 import { connectWallet } from "./connect-wallet";
 import { convertToNetworkId } from "./use-rpc-handler";
-import { decodeError } from "ethers-decode-error";
+import { decodeError } from "@ariesgun/ethers-decode-error";
 // import { decodeError } from "./error-decoder";
 
 export async function fetchTreasury(permit: Permit): Promise<{ balance: BigNumber; allowance: BigNumber; decimals: number; symbol: string }> {
