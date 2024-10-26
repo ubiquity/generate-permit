@@ -32,11 +32,8 @@ export function claimErc721PermitHandler(reward: ERC721Permit) {
     }
 
     buttonController.showLoader();
-
-    const nftContract = new ethers.Contract(reward.tokenAddress, nftRewardAbi, signer);
-    if (!nftContract) return;
-
     try {
+      const nftContract = new ethers.Contract(reward.tokenAddress, nftRewardAbi, signer);
       const tx: TransactionResponse = await nftContract.safeMint(
         {
           beneficiary: reward.beneficiary,

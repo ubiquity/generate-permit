@@ -10,7 +10,6 @@ import { toaster, errorToast, MetaMaskError } from "../toaster";
 import { connectWallet } from "./connect-wallet";
 import { convertToNetworkId } from "./use-rpc-handler";
 import { decodeError } from "@ariesgun/ethers-decode-error";
-// import { decodeError } from "./error-decoder";
 
 export async function fetchTreasury(permit: Permit): Promise<{ balance: BigNumber; allowance: BigNumber; decimals: number; symbol: string }> {
   let balance: BigNumber, allowance: BigNumber, decimals: number, symbol: string;
@@ -91,6 +90,7 @@ export async function transferFromPermit(permit2Contract: Contract, reward: Perm
         buttonController.hideLoader();
         buttonController.showMakeClaim();
       } else {
+        console.error(e);
         const { error } = decodeError(e, permit2Abi);
         errorToast(e, `Error in permitTransferFrom: ${error}`);
       }
@@ -273,11 +273,12 @@ invalidateButton.addEventListener("click", async function invalidateButtonClickH
 
     if (!app.signer) return;
     await invalidateNonce(app.signer, app.reward.nonce);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      const e = error as unknown as MetaMaskError;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      const e = err as unknown as MetaMaskError;
       console.error(e);
-      errorToast(e, e.reason);
+      const { error } = decodeError(e, permit2Abi);
+      errorToast(e, `Error in invalidateNonce: ${error}`);
       return;
     }
   }
