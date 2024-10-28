@@ -11,7 +11,7 @@ export default defineWorkersConfig({
     dir: "tests/unit",
     poolOptions: {
       workers: {
-        wrangler: { configPath: "./wrangler.toml" },
+        wrangler: { configPath: "./tests/wrangler.toml" },
       },
       main: "./functions/get-best-card.ts",
     },
