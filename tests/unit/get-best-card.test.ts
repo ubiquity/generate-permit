@@ -5,7 +5,7 @@ import { server } from "../__mocks__/node";
 import bestCard from "../__mocks__/get-best-card.json";
 
 describe(
-  "Get best virtual card",
+  "Get best payment card",
   () => {
     beforeAll(() => {
       try {
@@ -20,7 +20,8 @@ describe(
     });
 
     afterAll(() => server.close());
-    it("should respond with correct virtual card", async () => {
+
+    it("should respond with correct payment card", async () => {
       // Create an empty context to pass to `worker.fetch()`
       const execContext = createExecutionContext();
       const eventCtx = getEventContext(execContext);
