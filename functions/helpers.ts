@@ -52,7 +52,7 @@ export async function getAccessToken(env: Env): Promise<AccessToken> {
 
 export function getBaseUrl(isSandbox: boolean): string {
   if (isSandbox === false) {
-    return "https://giftcards.reloadly.com";
+    return "https://web3-gateway-test.com/proxy/reloadly/production";
   }
   return "https://giftcards-sandbox.reloadly.com";
 }
