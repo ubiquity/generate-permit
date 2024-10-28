@@ -54,7 +54,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.21",
+    "@cloudflare/vitest-pool-workers": "^0.5.22",
     "@cloudflare/workers-types": "^4.20240423.0",
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.2",
@@ -79,6 +79,7 @@
     "jest-md-dashboard": "0.8.0",
     "knip": "^5.0.1",
     "lint-staged": "^15.2.2",
+    "msw": "^2.5.2",
     "nodemon": "^3.0.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
