@@ -2,7 +2,7 @@ import { env, createExecutionContext, waitOnExecutionContext } from "cloudflare:
 import { describe, it, expect, beforeAll, afterEach, afterAll } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-best-card";
 import { server } from "../__mocks__/node";
-import getBestCard from "../__mocks__/get-best-card.json";
+import bestCard from "../__mocks__/get-best-card.json";
 
 describe(
   "Get best virtual card",
@@ -27,7 +27,7 @@ describe(
       const response = await pagesFunction(eventCtx);
       await waitOnExecutionContext(execContext);
       expect(response.status).toBe(200);
-      expect(await response.text()).toBe(JSON.stringify(getBestCard));
+      expect(await response.json()).toEqual(bestCard);
     });
   },
   { timeout: 20000 }
