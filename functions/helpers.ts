@@ -64,10 +64,12 @@ export async function findBestCard(countryCode: string, amount: BigNumberish, ac
   }
 
   const masterCards = await getGiftCards("mastercard", countryCode, accessToken);
+  console.log("length", masterCards.length);
+  console.log("typeof ", typeof masterCards);
 
   const masterCardIntlSku = masterCardIntlSkus.find((sku) => sku.countryCode == countryCode);
   if (masterCardIntlSku) {
-    const tokenizedIntlMastercard = masterCards.find((masterCard) => masterCard.productId == masterCardIntlSku.sku);
+    const tokenizedIntlMastercard = masterCards?.find((masterCard) => masterCard.productId == masterCardIntlSku.sku);
     if (tokenizedIntlMastercard && isGiftCardAvailable(tokenizedIntlMastercard, amount)) {
       return tokenizedIntlMastercard;
     }
@@ -81,7 +83,7 @@ export async function findBestCard(countryCode: string, amount: BigNumberish, ac
   const visaCards = await getGiftCards("visa", countryCode, accessToken);
   const visaIntlSku = visaIntlSkus.find((sku) => sku.countryCode == countryCode);
   if (visaIntlSku) {
-    const intlVisa = visaCards.find((visaCard) => visaCard.productId == visaIntlSku.sku);
+    const intlVisa = visaCards?.find((visaCard) => visaCard.productId == visaIntlSku.sku);
     if (intlVisa && isGiftCardAvailable(intlVisa, amount)) {
       return intlVisa;
     }
@@ -92,12 +94,12 @@ export async function findBestCard(countryCode: string, amount: BigNumberish, ac
     return fallbackVisa;
   }
 
-  const anyMastercard = masterCards.find((masterCard) => isGiftCardAvailable(masterCard, amount));
+  const anyMastercard = masterCards?.find((masterCard) => isGiftCardAvailable(masterCard, amount));
   if (anyMastercard) {
     return anyMastercard;
   }
 
-  const anyVisa = visaCards.find((visaCard) => isGiftCardAvailable(visaCard, amount));
+  const anyVisa = visaCards?.find((visaCard) => isGiftCardAvailable(visaCard, amount));
   if (anyVisa) {
     return anyVisa;
   }

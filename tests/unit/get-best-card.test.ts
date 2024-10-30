@@ -1,7 +1,8 @@
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-best-card";
-import bestCard from "../__mocks__/get-best-card.json";
+import bestCard from "../__mocks__/best-card-sandbox.json";
+import card18597 from "../__mocks__/card-18597.json";
 import { server } from "../__mocks__/node";
 import { getEventContext as createEventContext } from "./helpers";
 
@@ -22,8 +23,16 @@ describe(
 
     afterAll(() => server.close());
 
+    it("should respond with correct payment card on production", async () => {
+      const execContext = createExecutionContext();
+      const eventCtx = createEventContext(execContext);
+      const response = await pagesFunction(eventCtx);
+      await waitOnExecutionContext(execContext);
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual(card18597);
+    });
+
     it("should respond with correct payment card for sandbox", async () => {
-      // Create an empty context to pass to `worker.fetch()`
       const execContext = createExecutionContext();
       const eventCtx = createEventContext(execContext, true);
       const response = await pagesFunction(eventCtx);
