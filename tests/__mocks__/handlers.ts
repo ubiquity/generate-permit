@@ -19,6 +19,10 @@ export const handlers = [
     }
     return HttpResponse.json({ content: [] }, { status: 200 });
   }),
+  http.all(`*`, ({ request }) => {
+    console.error(`All requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`);
+    return HttpResponse.text(`All requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`, { status: 404 });
+  }),
   // http.get(`https://giftcards-sandbox.reloadly.com/products?productName=visa&productCategoryId=1`, () => {
   //   return HttpResponse.json({ content: [bestCard] });
   // }),
