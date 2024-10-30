@@ -1,5 +1,6 @@
 import { parseEther } from "@ethersproject/units";
 import { env } from "cloudflare:test";
+import { Context } from "../../functions/types";
 
 export const TESTS_BASE_URL = "https://localhost";
 
@@ -25,5 +26,5 @@ export function getEventContext(execContext: ExecutionContext, isSandbox: boolea
     params: {},
     data: {},
   };
-  return eventCtx;
+  return eventCtx as Context;
 }
