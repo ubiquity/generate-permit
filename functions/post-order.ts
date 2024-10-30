@@ -9,7 +9,7 @@ import { ExchangeRate, GiftCard } from "../shared/types";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, findBestCard, getAccessToken, getBaseUrl } from "./helpers";
+import { commonHeaders, findBestCard, getAccessToken, getReloadlyApiBaseUrl } from "./helpers";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./types";
 import { validateEnvVars, validateRequestMethod } from "./validators";
 import { postOrderParamsSchema } from "../shared/api-types";
@@ -110,7 +110,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 }
 
 export async function getGiftCardById(productId: number, accessToken: AccessToken): Promise<GiftCard> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/products/${productId}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/products/${productId}`;
   console.log(`Retrieving gift cards from ${url}`);
   const options = {
     method: "GET",
@@ -138,7 +138,7 @@ export async function getGiftCardById(productId: number, accessToken: AccessToke
 }
 
 async function orderGiftCard(productId: number, cardValue: number, identifier: string, accessToken: AccessToken): Promise<ReloadlyOrderResponse> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/orders`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/orders`;
   console.log(`Placing order at url: ${url}`);
 
   const requestBody = JSON.stringify({
@@ -189,7 +189,7 @@ async function isDuplicateOrder(orderId: string, accessToken: AccessToken): Prom
 }
 
 async function getExchangeRate(usdAmount: number, fromCurrency: string, accessToken: AccessToken): Promise<ExchangeRate> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/fx-rate?currencyCode=${fromCurrency}&amount=${usdAmount}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/fx-rate?currencyCode=${fromCurrency}&amount=${usdAmount}`;
   console.log(`Retrieving url ${url}`);
   const options = {
     method: "GET",

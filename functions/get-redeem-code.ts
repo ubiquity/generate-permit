@@ -2,7 +2,7 @@ import { verifyMessage } from "ethers/lib/utils";
 import { getGiftCardOrderId, getMessageToSign } from "../shared/helpers";
 import { getRedeemCodeParamsSchema } from "../shared/api-types";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, getAccessToken, getBaseUrl } from "./helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./helpers";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyRedeemCodeResponse } from "./types";
 import { validateEnvVars, validateRequestMethod } from "./validators";
 import { RedeemCode } from "../shared/types";
@@ -62,7 +62,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 }
 
 export async function getRedeemCode(transactionId: number, accessToken: AccessToken): Promise<RedeemCode[]> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/orders/transactions/${transactionId}/cards`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/orders/transactions/${transactionId}/cards`;
   console.log(`Retrieving redeem codes from ${url}`);
   const options = {
     method: "GET",

@@ -3,7 +3,7 @@ import { env } from "cloudflare:test";
 
 export const TESTS_BASE_URL = "https://localhost";
 
-export function getEventContext(execContext: ExecutionContext) {
+export function getEventContext(execContext: ExecutionContext, isSandbox: boolean = false) {
   const request = new Request(`${TESTS_BASE_URL}/get-best-card?country=US&amount=${parseEther("50")}`) as Request<
     unknown,
     IncomingRequestCfProperties<unknown>
@@ -17,7 +17,7 @@ export function getEventContext(execContext: ExecutionContext) {
       return new Response();
     },
     env: {
-      ...env,
+      ...Object.assign({}, env, { USE_RELOADLY_SANDBOX: isSandbox }),
       ASSETS: {
         fetch,
       },

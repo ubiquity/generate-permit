@@ -1,5 +1,5 @@
 import { OrderTransaction } from "../shared/types";
-import { commonHeaders, getAccessToken, getBaseUrl } from "./helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./helpers";
 import { getGiftCardById } from "./post-order";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyGetTransactionResponse } from "./types";
 import { validateEnvVars, validateRequestMethod } from "./validators";
@@ -46,7 +46,7 @@ export async function getTransactionFromOrderId(orderId: string, accessToken: Ac
   const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
   const oneYearAgoFormatted = oneYearAgo.toISOString().replace("T", " ").substring(0, 19);
 
-  const url = `${getBaseUrl(accessToken.isSandbox)}/reports/transactions?size=1&page=1&customIdentifier=${orderId}&startDate=${oneYearAgoFormatted}&endDate=${nowFormatted}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/reports/transactions?size=1&page=1&customIdentifier=${orderId}&startDate=${oneYearAgoFormatted}&endDate=${nowFormatted}`;
   console.log(`Retrieving transaction from ${url}`);
   const options = {
     method: "GET",

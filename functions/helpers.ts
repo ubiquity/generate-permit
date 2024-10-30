@@ -24,10 +24,18 @@ export interface ReloadlyAuthResponse {
   token_type: string;
 }
 
+export const RELOADLY_AUTH_URL = "https://auth.reloadly.com/oauth/token";
+export const RELOADLY_SANDBOX_API_URL = "https://giftcards-sandbox.reloadly.com";
+export const RELOADLY_PRODUCTION_API_URL = "https://web3-gateway-test.com/proxy/reloadly/production";
+export function getReloadlyApiBaseUrl(isSandbox: boolean): string {
+  if (isSandbox === false) {
+    return RELOADLY_PRODUCTION_API_URL;
+  }
+  return RELOADLY_SANDBOX_API_URL;
+}
+
 export async function getAccessToken(env: Env): Promise<AccessToken> {
   console.log("Using Reloadly Sandbox:", env.USE_RELOADLY_SANDBOX !== "false");
-
-  const url = "https://auth.reloadly.com/oauth/token";
   const options = {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -39,7 +47,7 @@ export async function getAccessToken(env: Env): Promise<AccessToken> {
     }),
   };
 
-  const res = await fetch(url, options);
+  const res = await fetch(RELOADLY_AUTH_URL, options);
   if (res.status == 200) {
     const successResponse = (await res.json()) as ReloadlyAuthResponse;
     return {
@@ -48,13 +56,6 @@ export async function getAccessToken(env: Env): Promise<AccessToken> {
     };
   }
   throw `Getting access token failed: ${JSON.stringify(await res.json())}`;
-}
-
-export function getBaseUrl(isSandbox: boolean): string {
-  if (isSandbox === false) {
-    return "https://web3-gateway-test.com/proxy/reloadly/production";
-  }
-  return "https://giftcards-sandbox.reloadly.com";
 }
 
 export async function findBestCard(countryCode: string, amount: BigNumberish, accessToken: AccessToken): Promise<GiftCard> {
@@ -125,7 +126,7 @@ async function getFallbackIntlVisa(accessToken: AccessToken): Promise<GiftCard |
 export async function getGiftCards(productQuery: string, country: string, accessToken: AccessToken): Promise<GiftCard[]> {
   // productCategoryId = 1 = Finance.
   // This should prevent mixing of other gift cards with similar keywords
-  const url = `${getBaseUrl(accessToken.isSandbox)}/countries/${country}/products?productName=${productQuery}&productCategoryId=1`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/countries/${country}/products?productName=${productQuery}&productCategoryId=1`;
 
   console.log(`Retrieving gift cards from ${url}`);
   const options = {
@@ -163,7 +164,7 @@ export async function getSandboxGiftCard(productQuery: string, country: string, 
     throw new Error("Cannot load sandbox card on production");
   }
 
-  const url = `${getBaseUrl(accessToken.isSandbox)}/products?productName=${productQuery}&productCategoryId=1`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/products?productName=${productQuery}&productCategoryId=1`;
 
   console.log(`Retrieving gift cards from ${url}`);
   const options = {

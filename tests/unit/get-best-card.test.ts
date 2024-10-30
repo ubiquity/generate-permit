@@ -22,10 +22,10 @@ describe(
 
     afterAll(() => server.close());
 
-    it("should respond with correct payment card", async () => {
+    it("should respond with correct payment card for sandbox", async () => {
       // Create an empty context to pass to `worker.fetch()`
       const execContext = createExecutionContext();
-      const eventCtx = createEventContext(execContext);
+      const eventCtx = createEventContext(execContext, true);
       const response = await pagesFunction(eventCtx);
       await waitOnExecutionContext(execContext);
       expect(response.status).toBe(200);
