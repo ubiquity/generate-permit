@@ -18,7 +18,7 @@ export function getEventContext(execContext: ExecutionContext, isSandbox: boolea
       return new Response();
     },
     env: {
-      ...Object.assign({}, env, { USE_RELOADLY_SANDBOX: isSandbox }),
+      ...Object.assign({}, env, { USE_RELOADLY_SANDBOX: isSandbox ? "true" : "false" }),
       ASSETS: {
         fetch,
       },
