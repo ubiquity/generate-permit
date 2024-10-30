@@ -123,13 +123,6 @@ async function getFallbackIntlVisa(accessToken: AccessToken): Promise<GiftCard |
 }
 
 export async function getGiftCards(productQuery: string, country: string, accessToken: AccessToken): Promise<GiftCard[]> {
-  if (accessToken.isSandbox) {
-    // Load product differently on Reloadly sandbox
-    // Sandbox doesn't have mastercard, it has only 1 visa card for US.
-    // This visa card doesn't load with location based url, let's use special url
-    // for this so that we have something to try on sandbox
-    return await getSandboxGiftCards(productQuery, country, accessToken);
-  }
   // productCategoryId = 1 = Finance.
   // This should prevent mixing of other gift cards with similar keywords
   const url = `${getBaseUrl(accessToken.isSandbox)}/countries/${country}/products?productName=${productQuery}&productCategoryId=1`;
@@ -165,7 +158,11 @@ export async function getGiftCards(productQuery: string, country: string, access
   return responseJson as GiftCard[];
 }
 
-async function getSandboxGiftCards(productQuery: string, country: string, accessToken: AccessToken): Promise<GiftCard[]> {
+export async function getSandboxGiftCard(productQuery: string, country: string, accessToken: AccessToken): Promise<GiftCard> {
+  if (!accessToken.isSandbox) {
+    throw new Error("Cannot load sandbox card on production");
+  }
+
   const url = `${getBaseUrl(accessToken.isSandbox)}/products?productName=${productQuery}&productCategoryId=1`;
 
   console.log(`Retrieving gift cards from ${url}`);
@@ -196,5 +193,9 @@ async function getSandboxGiftCards(productQuery: string, country: string, access
     );
   }
 
-  return (responseJson as { content: GiftCard[] })?.content;
+  const payamentCards = (responseJson as { content: GiftCard[] })?.content;
+  if (payamentCards.length) {
+    return payamentCards[0];
+  }
+  throw new Error(`No suitable card found on sandbox for country code ${country}.`);
 }
