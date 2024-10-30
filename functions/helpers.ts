@@ -180,10 +180,6 @@ export async function getSandboxGiftCard(productQuery: string, country: string, 
   console.log("Response status", response.status);
   console.log(`Response from ${url}`, responseJson);
 
-  if (response.status == 404) {
-    return [];
-  }
-
   if (response.status != 200) {
     throw new Error(
       `Error from Reloadly API: ${JSON.stringify({
