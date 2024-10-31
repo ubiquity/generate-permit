@@ -36,4 +36,13 @@ describe("Get best payment card", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(order);
   });
+
+  it("should respond with error for invalid order id", async () => {
+    const path = `/get-order?orderId=0xd89d85e5f65499e03f85cf5d4e69d04ee04d959cc04f8aa6a9fccba52b3c6917`;
+    const eventCtx = createEventContext(path, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual("Order not found.");
+  });
 });
