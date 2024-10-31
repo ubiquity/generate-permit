@@ -58,9 +58,10 @@ export async function getAccessToken(env: Env): Promise<AccessToken> {
   throw `Getting access token failed: ${JSON.stringify(await res.json())}`;
 }
 
-export async function findBestCard(countryCode: string, amount: BigNumberish, accessToken: AccessToken): Promise<GiftCard> {
+export async function findBestCard(countryCode: string, amount: BigNumberish, accessToken: AccessToken): Promise<GiftCard | null> {
   if (!isAllowed(countryCode)) {
-    throw new Error(`Country ${countryCode} is not in the allowed country list.`);
+    console.error(`Country ${countryCode} is not in the allowed country list.`);
+    return null;
   }
 
   const masterCards = await getGiftCards("mastercard", countryCode, accessToken);

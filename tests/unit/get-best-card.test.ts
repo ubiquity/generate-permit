@@ -34,6 +34,16 @@ describe(
       expect(await response.json()).toEqual(card18597);
     });
 
+    it.only("should respond with no payment card for unsupported country", async () => {
+      const execContext = createExecutionContext();
+      const path = `/get-best-card?country=PK&amount=${parseEther("50")}`;
+      const eventCtx = createEventContext(path, execContext);
+      const response = await pagesFunction(eventCtx);
+      await waitOnExecutionContext(execContext);
+      expect(response.status).toBe(404);
+      expect(await response.json()).toEqual({ message: "There are no gift cards available." });
+    });
+
     it("should respond with correct payment card for sandbox", async () => {
       const execContext = createExecutionContext();
       const path = `/get-best-card?country=US&amount=${parseEther("50")}`;
