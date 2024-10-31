@@ -105,7 +105,8 @@ export async function findBestCard(countryCode: string, amount: BigNumberish, ac
     return anyVisa;
   }
 
-  throw new Error(`No suitable card found for country code ${countryCode} and amount ${amount}.`);
+  console.error(`No suitable card found for country code ${countryCode} and amount ${amount}.`);
+  return null;
 }
 
 async function getFallbackIntlMastercard(accessToken: AccessToken): Promise<GiftCard | null> {

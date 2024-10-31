@@ -3,6 +3,7 @@ import bestCardSandbox from "./best-card-sandbox.json";
 import bestMastercardProd from "./best-master-card-prod.json";
 import bestVisaProd from "./best-visa-card-prod.json";
 import card18597 from "./card-18597.json";
+import card18598 from "./card-18598.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/helpers";
 
 /**
@@ -17,6 +18,9 @@ export const handlers = [
   }),
   http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18597`, () => {
     return HttpResponse.json(card18597, { status: 200 });
+  }),
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18598`, () => {
+    return HttpResponse.json(card18598, { status: 200 });
   }),
   http.get(`${RELOADLY_SANDBOX_API_URL}/products`, ({ request }) => {
     const url = new URL(request.url);
