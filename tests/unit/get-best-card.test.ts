@@ -12,7 +12,10 @@ describe(
   "Get best payment card",
   () => {
     let server: SetupServerApi;
+    let execContext: ExecutionContext;
+
     beforeAll(() => {
+      execContext = createExecutionContext();
       try {
         server = setupServer(...handlers);
         server.listen();
@@ -30,7 +33,6 @@ describe(
     });
 
     it("should respond with correct payment card on production", async () => {
-      const execContext = createExecutionContext();
       const path = `/get-best-card?country=US&amount=${parseEther("50")}`;
       const eventCtx = createEventContext(path, execContext);
       const response = await pagesFunction(eventCtx);
@@ -39,8 +41,7 @@ describe(
       expect(await response.json()).toEqual(card18597);
     });
 
-    it.only("should respond with US International Mastercard for Malta as fallback", async () => {
-      const execContext = createExecutionContext();
+    it("should respond with US International Mastercard for Malta as fallback", async () => {
       const path = `/get-best-card?country=MT&amount=${parseEther("50")}`;
       const eventCtx = createEventContext(path, execContext);
       const response = await pagesFunction(eventCtx);
@@ -50,7 +51,6 @@ describe(
     });
 
     it("should respond with no payment card for unsupported country", async () => {
-      const execContext = createExecutionContext();
       const path = `/get-best-card?country=PK&amount=${parseEther("50")}`;
       const eventCtx = createEventContext(path, execContext);
       const response = await pagesFunction(eventCtx);
@@ -60,7 +60,6 @@ describe(
     });
 
     it("should respond with no payment card for low amount permit", async () => {
-      const execContext = createExecutionContext();
       const path = `/get-best-card?country=US&amount=${parseEther("1")}`;
       const eventCtx = createEventContext(path, execContext);
       const response = await pagesFunction(eventCtx);
@@ -70,7 +69,6 @@ describe(
     });
 
     it("should respond with correct payment card for sandbox", async () => {
-      const execContext = createExecutionContext();
       const path = `/get-best-card?country=US&amount=${parseEther("50")}`;
       const eventCtx = createEventContext(path, execContext, true);
       const response = await pagesFunction(eventCtx);
