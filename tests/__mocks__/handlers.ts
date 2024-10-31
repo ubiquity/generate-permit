@@ -5,6 +5,8 @@ import bestVisaProd from "./best-visa-card-prod.json";
 import card18597 from "./card-18597.json";
 import card18598 from "./card-18598.json";
 import noCardMt from "./no-card-mt.json";
+import transaction from "./get-order/transaction.json";
+import noTransaction from "./get-order/no-transaction.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/helpers";
 
 /**
@@ -46,6 +48,17 @@ export const handlers = [
 
   http.get(`${RELOADLY_PRODUCTION_API_URL}/countries/MT/products`, () => {
     return HttpResponse.json(noCardMt, { status: 404 });
+  }),
+
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/reports/transactions`, ({ request }) => {
+    const url = new URL(request.url);
+    const customIdentifier = url.searchParams.get("customIdentifier");
+
+    if (customIdentifier == "0xd89d85e5f65499e03f85cf5d4e69d04ee04d959cc04f8aa6a9fccba52b3c6916") {
+      return HttpResponse.json(transaction, { status: 200 });
+    }
+
+    return HttpResponse.json(noTransaction, { status: 200 });
   }),
 
   http.all(`*`, ({ request }) => {
