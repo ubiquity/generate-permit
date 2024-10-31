@@ -1,6 +1,6 @@
-import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { parseEther } from "@ethersproject/units";
+import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-best-card";
 import bestCard from "../__mocks__/best-card-sandbox.json";
 import card18597 from "../__mocks__/card-18597.json";
@@ -14,15 +14,13 @@ describe(
       try {
         server.listen();
       } catch (e) {
-        console.log("done error");
+        console.log(`Error starting msw server: ${e}`);
       }
     });
 
     afterEach(() => {
       server.resetHandlers();
     });
-
-    afterAll(() => server.close());
 
     it("should respond with correct payment card on production", async () => {
       const execContext = createExecutionContext();
