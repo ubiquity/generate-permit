@@ -4,6 +4,7 @@ import bestMastercardProd from "./best-master-card-prod.json";
 import bestVisaProd from "./best-visa-card-prod.json";
 import card18597 from "./card-18597.json";
 import card18598 from "./card-18598.json";
+import noCardMt from "./no-card-mt.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/helpers";
 
 /**
@@ -30,17 +31,21 @@ export const handlers = [
     }
     return HttpResponse.json({ content: [] }, { status: 200 });
   }),
-  http.get(`${RELOADLY_PRODUCTION_API_URL}/countries/([A-Z]{2})/products`, ({ request }) => {
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/countries/US/products`, ({ request }) => {
     const url = new URL(request.url);
     const productName = url.searchParams.get("productName");
 
-    if (url.toString().includes("/countries/US/") && productName == "mastercard") {
+    if (productName == "mastercard") {
       return HttpResponse.json([bestMastercardProd], { status: 200 });
     }
-    if (url.toString().includes("/countries/US/") && productName == "visa") {
+    if (productName == "visa") {
       return HttpResponse.json([bestVisaProd], { status: 200 });
     }
     return HttpResponse.json([], { status: 200 });
+  }),
+
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/countries/MT/products`, () => {
+    return HttpResponse.json(noCardMt, { status: 404 });
   }),
 
   http.all(`*`, ({ request }) => {
