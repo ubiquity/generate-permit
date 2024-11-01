@@ -6,8 +6,11 @@ import card18597 from "./get-best-card/card-18597.json";
 import card18598 from "./get-best-card/card-18598.json";
 import noCardMt from "./get-best-card/no-card-mt.json";
 import transaction from "./get-order/transaction.json";
+
 import noTransaction from "./get-order/no-transaction.json";
-import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/helpers";
+import transaction0x33f4 from "./get-redeem-code/transaction-0x33f4.json";
+import card from "./get-redeem-code/card.json";
+import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/utils/helpers";
 
 /**
  * Intercepts the routes and returns a custom payload
@@ -50,12 +53,18 @@ export const httpMocks = [
     return HttpResponse.json(noCardMt, { status: 404 });
   }),
 
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/orders/transactions/38994/cards`, () => {
+    return HttpResponse.json(card, { status: 200 });
+  }),
+
   http.get(`${RELOADLY_PRODUCTION_API_URL}/reports/transactions`, ({ request }) => {
     const url = new URL(request.url);
     const customIdentifier = url.searchParams.get("customIdentifier");
 
     if (customIdentifier == "0xd89d85e5f65499e03f85cf5d4e69d04ee04d959cc04f8aa6a9fccba52b3c6916") {
       return HttpResponse.json(transaction, { status: 200 });
+    } else if (customIdentifier == "0x33f4b8ad8a2d0dda3869566a065602a3d20a31f8ed723013653a5d26a994ceef") {
+      return HttpResponse.json(transaction0x33f4, { status: 200 });
     }
 
     return HttpResponse.json(noTransaction, { status: 200 });
