@@ -2,10 +2,10 @@ import { parseEther } from "@ethersproject/units";
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-best-card";
-import bestCard from "../__mocks__/best-card-sandbox.json";
-import card18597 from "../__mocks__/card-18597.json";
+import bestCard from "../fixtures/get-best-card/best-card-sandbox.json";
+import card18597 from "../fixtures/get-best-card/card-18597.json";
 import { setupServer, SetupServerApi } from "msw/node";
-import { handlers } from "../__mocks__/handlers";
+import { handlers } from "../fixtures/http-handlers";
 import { getEventContext as createEventContext } from "./helpers";
 
 describe(

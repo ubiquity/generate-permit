@@ -2,8 +2,8 @@ import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test"
 import { setupServer, SetupServerApi } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-order";
-import order from "../__mocks__/get-order/order.json";
-import { handlers } from "../__mocks__/handlers";
+import order from "../fixtures/get-order/order.json";
+import { handlers } from "../fixtures/http-handlers";
 import { getEventContext as createEventContext } from "./helpers";
 
 describe("Get best payment card", () => {

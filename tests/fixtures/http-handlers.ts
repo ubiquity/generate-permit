@@ -1,10 +1,10 @@
 import { http, HttpResponse } from "msw";
-import bestCardSandbox from "./best-card-sandbox.json";
-import bestMastercardProd from "./best-master-card-prod.json";
-import bestVisaProd from "./best-visa-card-prod.json";
-import card18597 from "./card-18597.json";
-import card18598 from "./card-18598.json";
-import noCardMt from "./no-card-mt.json";
+import bestCardSandbox from "./get-best-card/best-card-sandbox.json";
+import bestMastercardProd from "./get-best-card/best-master-card-prod.json";
+import bestVisaProd from "./get-best-card/best-visa-card-prod.json";
+import card18597 from "./get-best-card/card-18597.json";
+import card18598 from "./get-best-card/card-18598.json";
+import noCardMt from "./get-best-card/no-card-mt.json";
 import transaction from "./get-order/transaction.json";
 import noTransaction from "./get-order/no-transaction.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/helpers";
