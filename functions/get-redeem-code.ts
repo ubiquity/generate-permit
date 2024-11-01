@@ -42,12 +42,12 @@ export async function onRequest(ctx: Context): Promise<Response> {
     const orderId = getGiftCardOrderId(wallet, permitSig);
     const order = await getTransactionFromOrderId(orderId, accessToken);
 
-    if (order.transactionId != transactionId) {
+    if (order?.transactionId != transactionId) {
       console.error(
         `Given transaction does not match with retrieved transactionId using generated orderId: ${JSON.stringify({
           transactionId,
           orderId,
-          transactionIdFromOrder: order.transactionId,
+          transactionIdFromOrder: order?.transactionId,
         })}`
       );
       return errorResponse;

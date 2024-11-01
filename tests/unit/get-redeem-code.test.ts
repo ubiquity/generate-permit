@@ -42,4 +42,19 @@ describe("Get redeem code", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(card);
   });
+
+  it("should not return redeem code to user who is not actual buyer", async () => {
+    const transactionId = "38994";
+    const signedMessage =
+      "0xccfa5da9e3ef32b0be38ea7930e7624beec5d4f69d580d0b2ab28b8c0cb1a8cd752b22fe36cd77235f47754298ce1d80ba430c6f7aac67f34a120617a07b21951b";
+    const wallet = "0xE97e3b59B9c58a691bdb40De1698Af5fF29C2D71";
+    const permitSig = "0x4599c64a7e7556976972d50d961058280e752e1d824db0201305852e80601ed51e6a8bbb71047d09e8d4c75d450df1fc073c775426ee13f2006b8ad55ca2e49d1c";
+
+    const path = `/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`;
+    const eventCtx = createEventContext(path, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Given details are not valid to redeem code." });
+  });
 });
