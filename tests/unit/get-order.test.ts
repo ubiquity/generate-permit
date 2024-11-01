@@ -6,7 +6,7 @@ import order from "../fixtures/get-order/order.json";
 import { httpMocks } from "../fixtures/http-mocks";
 import { getEventContext as createEventContext } from "./helpers";
 
-describe("Get best payment card", () => {
+describe("Get payment card order", () => {
   let server: SetupServerApi;
   let execContext: ExecutionContext;
 

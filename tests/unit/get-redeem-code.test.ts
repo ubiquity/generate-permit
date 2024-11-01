@@ -6,7 +6,7 @@ import card from "../fixtures/get-redeem-code/card.json";
 import { httpMocks } from "../fixtures/http-mocks";
 import { getEventContext as createEventContext } from "./helpers";
 
-describe("Get redeem code", () => {
+describe("Get payment card redeem code", () => {
   let server: SetupServerApi;
   let execContext: ExecutionContext;
 
