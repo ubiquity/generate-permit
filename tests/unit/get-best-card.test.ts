@@ -1,11 +1,11 @@
 import { parseEther } from "@ethersproject/units";
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
+import { setupServer, SetupServerApi } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-best-card";
 import bestCard from "../fixtures/get-best-card/best-card-sandbox.json";
 import card18597 from "../fixtures/get-best-card/card-18597.json";
-import { setupServer, SetupServerApi } from "msw/node";
-import { handlers } from "../fixtures/http-handlers";
+import { httpMocks } from "../fixtures/http-mocks";
 import { getEventContext as createEventContext } from "./helpers";
 
 describe(
@@ -17,7 +17,7 @@ describe(
     beforeAll(() => {
       execContext = createExecutionContext();
       try {
-        server = setupServer(...handlers);
+        server = setupServer(...httpMocks);
         server.listen();
       } catch (e) {
         console.log(`Error starting msw server: ${e}`);

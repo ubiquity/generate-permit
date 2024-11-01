@@ -12,7 +12,7 @@ import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_UR
 /**
  * Intercepts the routes and returns a custom payload
  */
-export const handlers = [
+export const httpMocks = [
   // http.get(`${getBaseUrl(true)}/products**`, () => {
   //   return HttpResponse.json(bestCard);
   // }),
