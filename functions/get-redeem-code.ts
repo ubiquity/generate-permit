@@ -1,10 +1,10 @@
-import { verifyMessage } from "ethers/lib/utils";
+import { verifyMessage } from "@ethersproject/wallet";
 import { getGiftCardOrderId, getMessageToSign } from "../shared/helpers";
 import { getRedeemCodeParamsSchema } from "../shared/api-types";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./helpers";
-import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyRedeemCodeResponse } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
+import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyRedeemCodeResponse } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { RedeemCode } from "../shared/types";
 
 export async function onRequest(ctx: Context): Promise<Response> {

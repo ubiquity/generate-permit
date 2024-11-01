@@ -1,4 +1,4 @@
-import { ReloadlyOrderResponse } from "../../../functions/types";
+import { ReloadlyOrderResponse } from "../../../functions/utils/types";
 import { GetBestCardParams, GetOrderParams, GetRedeemCodeParams, PostOrderParams } from "../../../shared/api-types";
 import { GiftCard, OrderTransaction, RedeemCode } from "../../../shared/types";
 import { getApiBaseUrl } from "../rewards/gift-cards/helpers";

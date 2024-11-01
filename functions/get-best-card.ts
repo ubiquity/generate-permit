@@ -1,8 +1,9 @@
 import { BigNumber } from "ethers";
-import { getAccessToken, findBestCard, getSandboxGiftCard } from "./helpers";
-import { Context } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
 import { getBestCardParamsSchema } from "../shared/api-types";
+import { findBestCard } from "./utils/best-card-finder";
+import { getAccessToken } from "./utils/helpers";
+import { Context } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 
 export async function onRequest(ctx: Context): Promise<Response> {
   try {
@@ -21,16 +22,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 
     const accessToken = await getAccessToken(ctx.env);
 
-    let bestCard = null;
-    if (accessToken.isSandbox) {
-      // Load product differently on Reloadly sandbox
-      // Sandbox doesn't have mastercard, it has only 1 visa card for US.
-      // This visa card doesn't load with location based url, let's use special url
-      // for this so that we have something to try on sandbox
-      bestCard = await getSandboxGiftCard("visa", country, accessToken);
-    } else {
-      bestCard = await findBestCard(country, BigNumber.from(amount), accessToken);
-    }
+    const bestCard = await findBestCard(country, BigNumber.from(amount), accessToken);
 
     if (bestCard) {
       return Response.json(bestCard, { status: 200 });

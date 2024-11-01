@@ -1,8 +1,8 @@
 import { OrderTransaction } from "../shared/types";
-import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
 import { getGiftCardById } from "./post-order";
-import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyGetTransactionResponse } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
+import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyGetTransactionResponse } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { getOrderParamsSchema } from "../shared/api-types";
 
 export async function onRequest(ctx: Context): Promise<Response> {
