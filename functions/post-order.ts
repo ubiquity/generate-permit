@@ -9,11 +9,12 @@ import { ExchangeRate, GiftCard } from "../shared/types";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, findBestCard, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { postOrderParamsSchema } from "../shared/api-types";
 import { permitAllowedChainIds, ubiquityDollarAllowedChainIds, ubiquityDollarChainAddresses } from "../shared/constants";
+import { findBestCard } from "./utils/best-card-finder";
 
 export async function onRequest(ctx: Context): Promise<Response> {
   try {
