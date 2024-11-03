@@ -10,6 +10,7 @@ import transaction from "./get-order/transaction.json";
 import noTransaction from "./get-order/no-transaction.json";
 import transaction0x33f4 from "./get-redeem-code/transaction-0x33f4.json";
 import card from "./get-redeem-code/card.json";
+import order from "./post-order/order.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/utils/helpers";
 
 /**
@@ -70,13 +71,32 @@ export const httpMocks = [
     return HttpResponse.json(noTransaction, { status: 200 });
   }),
 
-  http.all(`*`, ({ request }) => {
-    console.error(`All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`);
-    return HttpResponse.json(
-      { msg: `All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}` },
-      { status: 404 }
-    );
+  http.post(`${RELOADLY_PRODUCTION_API_URL}/orders`, () => {
+    return HttpResponse.json(order, { status: 200 });
   }),
+  http.post(`${RELOADLY_SANDBOX_API_URL}/orders`, () => {
+    return HttpResponse.json(order, { status: 200 });
+  }),
+
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/products/13959`, () => {
+    return HttpResponse.json(bestCardSandbox, { status: 200 });
+  }),
+
+  http.get(`${RELOADLY_SANDBOX_API_URL}/products/13959`, () => {
+    return HttpResponse.json(bestCardSandbox, { status: 200 });
+  }),
+
+  http.get(`${RELOADLY_SANDBOX_API_URL}/reports/transactions`, () => {
+    return HttpResponse.json(noTransaction, { status: 200 });
+  }),
+
+  // http.all(`*`, ({ request }) => {
+  //   console.error(`All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`);
+  //   return HttpResponse.json(
+  //     { msg: `All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}` },
+  //     { status: 404 }
+  //   );
+  // }),
   // http.get(`https://giftcards-sandbox.reloadly.com/products?productName=visa&productCategoryId=1`, () => {
   //   return HttpResponse.json({ content: [bestCard] });
   // }),
