@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-redeem-code";
 import card from "../fixtures/get-redeem-code/card.json";
 import { httpMocks } from "../fixtures/http-mocks";
-import { getEventContext as createEventContext } from "./helpers";
+import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
 
 describe("Get payment card redeem code", () => {
   let server: SetupServerApi;
@@ -35,8 +35,11 @@ describe("Get payment card redeem code", () => {
     const wallet = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
     const permitSig = "0x4599c64a7e7556976972d50d961058280e752e1d824db0201305852e80601ed51e6a8bbb71047d09e8d4c75d450df1fc073c775426ee13f2006b8ad55ca2e49d1c";
 
-    const path = `/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`;
-    const eventCtx = createEventContext(path, execContext);
+    const request = new Request(
+      `${TESTS_BASE_URL}/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`
+    );
+    const eventCtx = createEventContext(request, execContext);
+
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(200);
@@ -50,8 +53,10 @@ describe("Get payment card redeem code", () => {
     const wallet = "0xE97e3b59B9c58a691bdb40De1698Af5fF29C2D71";
     const permitSig = "0x4599c64a7e7556976972d50d961058280e752e1d824db0201305852e80601ed51e6a8bbb71047d09e8d4c75d450df1fc073c775426ee13f2006b8ad55ca2e49d1c";
 
-    const path = `/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`;
-    const eventCtx = createEventContext(path, execContext);
+    const request = new Request(
+      `${TESTS_BASE_URL}/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`
+    );
+    const eventCtx = createEventContext(request, execContext);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
@@ -65,8 +70,11 @@ describe("Get payment card redeem code", () => {
     const wallet = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
     const permitSig = "0x4599c64a7e7556976972d50d961058280e752e1d824db0201305852e80601ed51e6a8bbb71047d09e8d4c75d450df1fc073c775426ee13f2006b8ad55ca2e49d1c";
 
-    const path = `/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`;
-    const eventCtx = createEventContext(path, execContext);
+    const request = new Request(
+      `${TESTS_BASE_URL}/get-redeem-code?transactionId=${transactionId}&signedMessage=${signedMessage}&wallet=${wallet}&permitSig=${permitSig}`
+    );
+    const eventCtx = createEventContext(request, execContext);
+
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
