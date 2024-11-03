@@ -16,7 +16,7 @@ describe("Get best payment card", () => {
     execContext = createExecutionContext();
     try {
       server = setupServer(...httpMocks);
-      server.listen();
+      server.listen({ onUnhandledRequest: "error" });
     } catch (e) {
       console.log(`Error starting msw server: ${e}`);
     }
