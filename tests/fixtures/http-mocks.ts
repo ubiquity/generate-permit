@@ -10,7 +10,8 @@ import transaction from "./get-order/transaction.json";
 import noTransaction from "./get-order/no-transaction.json";
 import transaction0x33f4 from "./get-redeem-code/transaction-0x33f4.json";
 import card from "./get-redeem-code/card.json";
-import order from "./post-order/order.json";
+import orderCard13959 from "./post-order/order-card-13959.json";
+import orderCard18597 from "./post-order/order-card-18597.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/utils/helpers";
 
 /**
@@ -42,10 +43,10 @@ export const httpMocks = [
     const productName = url.searchParams.get("productName");
 
     if (productName == "mastercard") {
-      return HttpResponse.json([bestMastercardProd], { status: 200 });
+      return HttpResponse.json(bestMastercardProd, { status: 200 });
     }
     if (productName == "visa") {
-      return HttpResponse.json([bestVisaProd], { status: 200 });
+      return HttpResponse.json(bestVisaProd, { status: 200 });
     }
     return HttpResponse.json([], { status: 200 });
   }),
@@ -72,10 +73,10 @@ export const httpMocks = [
   }),
 
   http.post(`${RELOADLY_PRODUCTION_API_URL}/orders`, () => {
-    return HttpResponse.json(order, { status: 200 });
+    return HttpResponse.json(orderCard18597, { status: 200 });
   }),
   http.post(`${RELOADLY_SANDBOX_API_URL}/orders`, () => {
-    return HttpResponse.json(order, { status: 200 });
+    return HttpResponse.json(orderCard13959, { status: 200 });
   }),
 
   http.get(`${RELOADLY_PRODUCTION_API_URL}/products/13959`, () => {
