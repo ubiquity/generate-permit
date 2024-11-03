@@ -51,6 +51,25 @@ describe("Post order for a payment card", () => {
     expect(await response.json()).toEqual(orderCard18597);
   });
 
+  it("should return err for ordering card that is not best suited", async () => {
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
+        productId: 18732,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ message: "There was an error while processing your request." });
+  });
+
   it("should post order on sandbox", async () => {
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
