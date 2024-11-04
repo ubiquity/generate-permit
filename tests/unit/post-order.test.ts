@@ -1,6 +1,6 @@
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { setupServer, SetupServerApi } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/post-order";
 import { httpMocks } from "../fixtures/http-mocks";
 import minedTx from "../fixtures/post-order/mined-tx.json";
@@ -14,7 +14,6 @@ describe("Post order for a payment card", () => {
   let execContext: ExecutionContext;
 
   beforeAll(async () => {
-    await initMocks();
     execContext = createExecutionContext();
     try {
       server = setupServer(...httpMocks);
@@ -22,6 +21,10 @@ describe("Post order for a payment card", () => {
     } catch (e) {
       console.log(`Error starting msw server: ${e}`);
     }
+  });
+
+  beforeEach(async () => {
+    await initMocks();
   });
 
   afterEach(() => {
@@ -68,6 +71,25 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ message: "There was an error while processing your request." });
+  });
+
+  it("should return err for ordering card for unsupported blockchain", async () => {
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 25,
+        txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Unsupported chain" });
   });
 
   it("should post order on sandbox", async () => {
