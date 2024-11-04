@@ -10,6 +10,8 @@ import receipt from "../fixtures/post-order/receipt.json";
 import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
 import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
 import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
+import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
+import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
@@ -109,6 +111,33 @@ describe("Post order for a payment card", () => {
         type: "permit",
         chainId: 31337,
         txHash: "0xf21e2ce3a5106c6ddd0d70c8925965878a2604ed042990be49b05773196bb6b4",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Your reward amount is either too high or too low to buy this card." });
+  });
+
+  it("should return err for ordering card with too high permit amount", async () => {
+    const providers = await import("@ethersproject/providers");
+    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
+      return receiptTooHigh;
+    });
+    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
+      return minedTxTooHigh;
+    });
+
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0x9c9fd8cde45957741c16f0af4ab191d9b010c6f95d351df8c023e14a2ac80aa2",
         productId: 18597,
         country: "US",
       }),
