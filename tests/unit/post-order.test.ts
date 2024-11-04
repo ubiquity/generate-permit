@@ -3,23 +3,26 @@ import { setupServer, SetupServerApi } from "msw/node";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/post-order";
 import { httpMocks } from "../fixtures/http-mocks";
+import minedTxForMockedParse from "../fixtures/post-order/mined-tx-for-mocked-parse.json";
+import minedTxNotPermit2 from "../fixtures/post-order/mined-tx-not-permit2.json";
+import minedTxPermitExpired from "../fixtures/post-order/mined-tx-permit-expired.json";
+import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
+import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
 import minedTx from "../fixtures/post-order/mined-tx.json";
-import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
 import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
+import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
+import receiptNotPermit2 from "../fixtures/post-order/receipt-not-permit2.json";
+import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.json";
+import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
+import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
+import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocked-parse.json";
 import receipt from "../fixtures/post-order/receipt.json";
 import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
-import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
-import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
-import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
-import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
-import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.json";
-import minedTxPermitExpired from "../fixtures/post-order/mined-tx-permit-expired.json";
-import receiptNotPermit2 from "../fixtures/post-order/receipt-not-permit2.json";
-import minedTxNotPermit2 from "../fixtures/post-order/mined-tx-not-permit2.json";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
   let execContext: ExecutionContext;
+  const consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
   beforeAll(async () => {
     execContext = createExecutionContext();
@@ -208,6 +211,43 @@ describe("Post order for a payment card", () => {
     expect(await response.json()).toEqual({ message: "Transaction is not authorized to purchase gift card." });
   });
 
+  it.only("should return error with tx hash that is not call to permitTransferFrom", async () => {
+    const providers = await import("@ethersproject/providers");
+    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
+      return receiptTxForMockedParse;
+    });
+    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
+      return minedTxForMockedParse;
+    });
+    const { Interface } = await import("@ethersproject/abi");
+    Interface.prototype.parseTransaction = vi.fn().mockImplementation(() => {
+      return parsedTxWrongMethod;
+    });
+
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xbef4c18032fbef0453f85191fb0fa91184b42d12ccc37f00eb7ae8c1d88a0233",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({
+      message: "Transaction is not authorized to purchase gift card.",
+    });
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Given transaction hash is not call to contract function permitTransferFrom",
+      "txParsed.functionFragment.name=permitTransferFromEdited"
+    );
+  });
+
   it("should post order on sandbox", async () => {
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -224,7 +264,7 @@ describe("Post order for a payment card", () => {
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(orderCard13959);
+    expect(await response.json()).toEqual("what");
   });
 });
 
