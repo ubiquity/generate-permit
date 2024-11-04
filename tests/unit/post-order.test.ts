@@ -12,6 +12,8 @@ import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
 import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
 import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
 import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
+import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.json";
+import minedTxPermitExpired from "../fixtures/post-order/mined-tx-permit-expired.json";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
@@ -148,6 +150,33 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual({ message: "Your reward amount is either too high or too low to buy this card." });
+  });
+
+  it("should return err for ordering card with expired permit", async () => {
+    const providers = await import("@ethersproject/providers");
+    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
+      return receiptPermitExpired;
+    });
+    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
+      return minedTxPermitExpired;
+    });
+
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xfac827e7448c6578f7a22f7f90ec64693ef54238164d50dd895567f382d3c0bb",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "The reward has expired." });
   });
 
   it("should post order on sandbox", async () => {
