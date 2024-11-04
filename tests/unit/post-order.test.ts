@@ -10,6 +10,7 @@ import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
 import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
 import minedTx from "../fixtures/post-order/mined-tx.json";
 import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
+import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
 import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
 import parsedTxWrongToken from "../fixtures/post-order/parsed-tx-wrong-token.json";
 import receiptNotPermit2 from "../fixtures/post-order/receipt-not-permit2.json";
@@ -248,7 +249,7 @@ describe("Post order for a payment card", () => {
     );
   });
 
-  it.only("should return error with tx hash that transfers wrong token", async () => {
+  it("should return error with tx hash that transfers wrong token", async () => {
     const providers = await import("@ethersproject/providers");
     providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
       return receiptTxForMockedParse;
@@ -299,7 +300,7 @@ describe("Post order for a payment card", () => {
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual("what");
+    expect(await response.json()).toEqual(orderCard13959);
   });
 });
 
