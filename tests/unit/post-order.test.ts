@@ -8,6 +8,8 @@ import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
 import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
 import receipt from "../fixtures/post-order/receipt.json";
 import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
+import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
+import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
@@ -90,6 +92,33 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual({ message: "Unsupported chain" });
+  });
+
+  it("should return err for ordering card with too low permit amount", async () => {
+    const providers = await import("@ethersproject/providers");
+    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
+      return receiptTooLow;
+    });
+    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
+      return minedTxTooLow;
+    });
+
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xf21e2ce3a5106c6ddd0d70c8925965878a2604ed042990be49b05773196bb6b4",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Your reward amount is either too high or too low to buy this card." });
   });
 
   it("should post order on sandbox", async () => {
