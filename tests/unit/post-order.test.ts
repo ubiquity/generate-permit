@@ -13,6 +13,7 @@ import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
 import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
 import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
 import parsedTxWrongToken from "../fixtures/post-order/parsed-tx-wrong-token.json";
+import parsedTxWrongTreasury from "../fixtures/post-order/parsed-tx-wrong-treasury.json";
 import receiptNotPermit2 from "../fixtures/post-order/receipt-not-permit2.json";
 import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.json";
 import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
@@ -281,6 +282,42 @@ describe("Post order for a payment card", () => {
     expect(consoleMock).toHaveBeenLastCalledWith(
       "Given transaction hash is not transferring the required ERC20 token.",
       '{"transferredToken":"0x4ECaBa5870353805a9F068101A40E0f32ed605C6","requiredToken":"0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"}'
+    );
+  });
+
+  it.only("should return error with tx hash that transfers to wrong treasury", async () => {
+    const providers = await import("@ethersproject/providers");
+    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
+      return receiptTxForMockedParse;
+    });
+    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
+      return minedTxForMockedParse;
+    });
+    const { Interface } = await import("@ethersproject/abi");
+    Interface.prototype.parseTransaction = vi.fn().mockImplementation(() => {
+      return parsedTxWrongTreasury;
+    });
+
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xbef4c18032fbef0453f85191fb0fa91184b42d12ccc37f00eb7ae8c1d88a0233",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual(generalError);
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Given transaction hash is not a token transfer to giftCardTreasuryAddress",
+      "txParsed.args.transferDetails.to=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "giftCardTreasuryAddress=0xD51B09ad92e08B962c994374F4e417d4AD435189"
     );
   });
 
