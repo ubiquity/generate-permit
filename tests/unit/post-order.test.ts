@@ -194,6 +194,11 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual(generalError);
+    expect(consoleMock).toHaveBeenLastCalledWith(
+      "Given transaction hash is not an interaction with permit2Address",
+      "txReceipt.to=0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+      "permit2Address=0x000000000022D473030F116dDEE9F6B43aC78BA3"
+    );
   });
 
   it("should return error with tx hash that is not call to permitTransferFrom", async () => {
