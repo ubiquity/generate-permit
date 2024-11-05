@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-redeem-code";
 import card from "../fixtures/get-redeem-code/card.json";
 import { httpMocks } from "../fixtures/http-mocks";
-import { getEventContext as createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
 
 describe("Get payment card redeem code", () => {
   let server: SetupServerApi;

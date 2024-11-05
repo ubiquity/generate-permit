@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/get-order";
 import order from "../fixtures/get-order/order.json";
 import { httpMocks } from "../fixtures/http-mocks";
-import { getEventContext as createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
 
 describe("Get payment card order", () => {
   let server: SetupServerApi;

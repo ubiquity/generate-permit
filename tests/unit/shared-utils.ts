@@ -3,7 +3,7 @@ import { Context } from "../../functions/utils/types";
 
 export const TESTS_BASE_URL = "https://localhost";
 
-export function getEventContext(request: Request, execContext: ExecutionContext, isSandbox: boolean = false) {
+export function createEventContext(request: Request, execContext: ExecutionContext, isSandbox: boolean = false) {
   const eventCtx: EventContext<typeof env, string, Record<string, unknown>> = {
     request: request as Request<unknown, IncomingRequestCfProperties<unknown>>,
     functionPath: "",

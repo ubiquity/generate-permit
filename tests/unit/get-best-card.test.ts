@@ -6,7 +6,7 @@ import { onRequest as pagesFunction } from "../../functions/get-best-card";
 import bestCard from "../fixtures/get-best-card/best-card-sandbox.json";
 import card18597 from "../fixtures/get-best-card/card-18597.json";
 import { httpMocks } from "../fixtures/http-mocks";
-import { getEventContext as createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
 
 describe("Get best payment card", () => {
   let server: SetupServerApi;

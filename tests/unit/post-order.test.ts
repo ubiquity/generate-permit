@@ -26,7 +26,7 @@ import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
 import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocked-parse.json";
 import receiptUusd from "../fixtures/post-order/receipt-tx-uusd.json";
 import receiptGeneric from "../fixtures/post-order/receipt.json";
-import { getEventContext as createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
