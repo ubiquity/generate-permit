@@ -2,7 +2,7 @@ import { BigNumberish } from "ethers";
 import { isAllowed } from "../../shared/allowed-country-list";
 import { isGiftCardAvailable } from "../../shared/helpers";
 import { GiftCard } from "../../shared/types";
-import { commonHeaders, getGiftCards, getReloadlyApiBaseUrl } from "./helpers";
+import { commonHeaders, getGiftCards, getReloadlyApiBaseUrl } from "./shared";
 import { getGiftCardById } from "../post-order";
 import { fallbackIntlMastercard, fallbackIntlVisa, masterCardIntlSkus, visaIntlSkus } from "./reloadly-lists";
 import { AccessToken, ReloadlyFailureResponse } from "./types";

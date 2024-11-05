@@ -1,5 +1,5 @@
 import { OrderTransaction } from "../shared/types";
-import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
 import { getGiftCardById } from "./post-order";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyGetTransactionResponse } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";

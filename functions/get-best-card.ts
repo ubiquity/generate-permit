@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { getBestCardParamsSchema } from "../shared/api-types";
 import { findBestCard } from "./utils/best-card-finder";
-import { getAccessToken } from "./utils/helpers";
+import { getAccessToken } from "./utils/shared";
 import { Context } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 

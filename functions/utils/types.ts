@@ -1,5 +1,5 @@
 import { GiftCard, Order, OrderTransaction, RedeemCode } from "../../shared/types";
-import { Env } from "./helpers";
+import { Env } from "./shared";
 
 export interface AccessToken {
   token: string;

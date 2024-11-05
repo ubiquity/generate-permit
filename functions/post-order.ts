@@ -9,7 +9,7 @@ import { ExchangeRate, GiftCard } from "../shared/types";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/helpers";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { postOrderParamsSchema } from "../shared/api-types";
