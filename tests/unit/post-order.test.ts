@@ -1,6 +1,8 @@
+import { TransactionDescription } from "@ethersproject/abi";
+import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { setupServer, SetupServerApi } from "msw/node";
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, MockInstance, vi } from "vitest";
 import { onRequest as pagesFunction } from "../../functions/post-order";
 import { httpMocks } from "../fixtures/http-mocks";
 import minedTxForMockedParse from "../fixtures/post-order/mined-tx-for-mocked-parse.json";
@@ -8,9 +10,9 @@ import minedTxNotPermit2 from "../fixtures/post-order/mined-tx-not-permit2.json"
 import minedTxPermitExpired from "../fixtures/post-order/mined-tx-permit-expired.json";
 import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
 import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
-import minedTx from "../fixtures/post-order/mined-tx.json";
-import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
+import minedTxGeneric from "../fixtures/post-order/mined-tx.json";
 import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
+import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
 import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
 import parsedTxWrongToken from "../fixtures/post-order/parsed-tx-wrong-token.json";
 import parsedTxWrongTreasury from "../fixtures/post-order/parsed-tx-wrong-treasury.json";
@@ -19,13 +21,13 @@ import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.
 import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
 import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
 import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocked-parse.json";
-import receipt from "../fixtures/post-order/receipt.json";
+import receiptGeneric from "../fixtures/post-order/receipt.json";
 import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
   let execContext: ExecutionContext;
-  const consoleMock = vi.spyOn(console, "error").mockImplementation(() => undefined);
+  let consoleMock: MockInstance;
   const generalError = { message: "Transaction is not authorized to purchase gift card." };
 
   beforeAll(async () => {
@@ -39,11 +41,12 @@ describe("Post order for a payment card", () => {
   });
 
   beforeEach(async () => {
-    await initMocks();
+    consoleMock = vi.spyOn(console, "error").mockImplementationOnce(() => undefined);
   });
 
   afterEach(() => {
     server.resetHandlers();
+    vi.restoreAllMocks();
   });
 
   afterAll(() => {
@@ -51,6 +54,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should post order on production", async () => {
+    await initMocks();
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -70,6 +74,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err for ordering card that is not best suited", async () => {
+    await initMocks();
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -89,6 +94,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err for ordering card for unsupported blockchain", async () => {
+    await initMocks();
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -108,13 +114,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err for ordering card with too low permit amount", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptTooLow;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxTooLow;
-    });
+    await initMocks(receiptTooLow, minedTxTooLow);
 
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -135,13 +135,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err for ordering card with too high permit amount", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptTooHigh;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxTooHigh;
-    });
+    await initMocks(receiptTooHigh, minedTxTooHigh);
 
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -162,14 +156,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err for ordering card with expired permit", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptPermitExpired;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxPermitExpired;
-    });
-
+    await initMocks(receiptPermitExpired, minedTxPermitExpired);
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -189,13 +176,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return err order with tx hash that not permit2 interaction", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptNotPermit2;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxNotPermit2;
-    });
+    await initMocks(receiptNotPermit2, minedTxNotPermit2);
 
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -216,17 +197,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return error with tx hash that is not call to permitTransferFrom", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptTxForMockedParse;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxForMockedParse;
-    });
-    const { Interface } = await import("@ethersproject/abi");
-    Interface.prototype.parseTransaction = vi.fn().mockImplementation(() => {
-      return parsedTxWrongMethod;
-    });
+    await initMocks(receiptTxForMockedParse, minedTxForMockedParse, parsedTxWrongMethod);
 
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -251,17 +222,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should return error with tx hash that transfers wrong token", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptTxForMockedParse;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxForMockedParse;
-    });
-    const { Interface } = await import("@ethersproject/abi");
-    Interface.prototype.parseTransaction = vi.fn().mockImplementation(() => {
-      return parsedTxWrongToken;
-    });
+    await initMocks(receiptTxForMockedParse, minedTxForMockedParse, parsedTxWrongToken);
 
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -285,19 +246,8 @@ describe("Post order for a payment card", () => {
     );
   });
 
-  it.only("should return error with tx hash that transfers to wrong treasury", async () => {
-    const providers = await import("@ethersproject/providers");
-    providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-      return receiptTxForMockedParse;
-    });
-    providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-      return minedTxForMockedParse;
-    });
-    const { Interface } = await import("@ethersproject/abi");
-    Interface.prototype.parseTransaction = vi.fn().mockImplementation(() => {
-      return parsedTxWrongTreasury;
-    });
-
+  it("should return error with tx hash that transfers to wrong treasury", async () => {
+    await initMocks(receiptTxForMockedParse, minedTxForMockedParse, parsedTxWrongTreasury);
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -314,6 +264,7 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(403);
     expect(await response.json()).toEqual(generalError);
+
     expect(consoleMock).toHaveBeenLastCalledWith(
       "Given transaction hash is not a token transfer to giftCardTreasuryAddress",
       "txParsed.args.transferDetails.to=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
@@ -322,6 +273,7 @@ describe("Post order for a payment card", () => {
   });
 
   it("should post order on sandbox", async () => {
+    await initMocks();
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
       body: JSON.stringify({
@@ -341,17 +293,24 @@ describe("Post order for a payment card", () => {
   });
 });
 
-async function initMocks() {
+async function initMocks(receipt: object = receiptGeneric, minedTx: object = minedTxGeneric, parsedTx?: object) {
   const helpers = await import("../../shared/helpers");
   vi.spyOn(helpers, "getFastestRpcUrl").mockImplementation(async () => {
     return "http://127.0.0.1:8545";
   });
 
   const providers = await import("@ethersproject/providers");
-  providers.JsonRpcProvider.prototype.getTransactionReceipt = vi.fn().mockImplementation(async () => {
-    return receipt;
+  vi.spyOn(providers.JsonRpcProvider.prototype, "getTransactionReceipt").mockImplementationOnce(async () => {
+    return receipt as TransactionReceipt;
   });
-  providers.JsonRpcProvider.prototype.getTransaction = vi.fn().mockImplementation(async () => {
-    return minedTx;
+  vi.spyOn(providers.JsonRpcProvider.prototype, "getTransaction").mockImplementationOnce(async () => {
+    return minedTx as TransactionResponse;
   });
+
+  if (parsedTx) {
+    const { Interface } = await import("@ethersproject/abi");
+    vi.spyOn(Interface.prototype, "parseTransaction").mockImplementationOnce(() => {
+      return parsedTx as TransactionDescription;
+    });
+  }
 }
