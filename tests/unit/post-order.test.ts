@@ -76,6 +76,7 @@ describe("Post order for a payment card", () => {
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(orderCard18597);
+    expect(false).toBe(true);
   });
 
   it("should return err for ordering card that is not best suited", async () => {
