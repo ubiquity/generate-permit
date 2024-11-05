@@ -127,9 +127,9 @@ async function getSandboxGiftCard(productQuery: string, country: string, accessT
     );
   }
 
-  const payamentCards = (responseJson as { content: GiftCard[] })?.content;
-  if (payamentCards.length) {
-    return payamentCards[0];
+  const paymentCards = (responseJson as { content: GiftCard[] })?.content;
+  if (paymentCards.length) {
+    return paymentCards[0];
   }
   throw new Error(`No suitable card found on sandbox for country code ${country}.`);
 }
