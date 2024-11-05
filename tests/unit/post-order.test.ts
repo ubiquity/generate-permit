@@ -10,9 +10,12 @@ import minedTxNotPermit2 from "../fixtures/post-order/mined-tx-not-permit2.json"
 import minedTxPermitExpired from "../fixtures/post-order/mined-tx-permit-expired.json";
 import minedTxTooHigh from "../fixtures/post-order/mined-tx-too-high.json";
 import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
+import minedTxUusd from "../fixtures/post-order/mined-tx-uusd.json";
 import minedTxGeneric from "../fixtures/post-order/mined-tx.json";
 import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
 import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
+import parsedTxUusdWrongMethod from "../fixtures/post-order/parsed-tx-uusd-wrong-method.json";
+import parsedTxUusdWrongTreasury from "../fixtures/post-order/parsed-tx-uusd-wrong-treasury.json";
 import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
 import parsedTxWrongToken from "../fixtures/post-order/parsed-tx-wrong-token.json";
 import parsedTxWrongTreasury from "../fixtures/post-order/parsed-tx-wrong-treasury.json";
@@ -21,6 +24,7 @@ import receiptPermitExpired from "../fixtures/post-order/receipt-permit-expired.
 import receiptTooHigh from "../fixtures/post-order/receipt-too-high.json";
 import receiptTooLow from "../fixtures/post-order/receipt-too-low.json";
 import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocked-parse.json";
+import receiptUusd from "../fixtures/post-order/receipt-tx-uusd.json";
 import receiptGeneric from "../fixtures/post-order/receipt.json";
 import { getEventContext as createEventContext, TESTS_BASE_URL } from "./helpers";
 
@@ -29,6 +33,7 @@ describe("Post order for a payment card", () => {
   let execContext: ExecutionContext;
   let consoleMock: MockInstance;
   const generalError = { message: "Transaction is not authorized to purchase gift card." };
+  const uusd = "ubiquity-dollar";
 
   beforeAll(async () => {
     execContext = createExecutionContext();
@@ -53,7 +58,7 @@ describe("Post order for a payment card", () => {
     server.close();
   });
 
-  it("should post order on production", async () => {
+  it("should post order on production with permit", async () => {
     await initMocks();
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
       method: "POST",
@@ -275,6 +280,126 @@ describe("Post order for a payment card", () => {
       "txParsed.args.transferDetails.to=0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       "giftCardTreasuryAddress=0xD51B09ad92e08B962c994374F4e417d4AD435189"
     );
+  });
+
+  it("should post order with uusd", async () => {
+    await initMocks(receiptUusd, minedTxUusd);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 31337,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(orderCard18597);
+  });
+
+  it("should return err with uusd for unsupported chain", async () => {
+    await initMocks(receiptUusd, minedTxUusd);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 25,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Unsupported chain" });
+  });
+
+  it("should return err with uusd for wrong method call", async () => {
+    await initMocks(receiptUusd, minedTxUusd, parsedTxUusdWrongMethod);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 31337,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Given transaction is not a token transfer" });
+  });
+
+  it("should return err with uusd for wrong method call", async () => {
+    await initMocks(receiptUusd, minedTxUusd, parsedTxUusdWrongMethod);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 31337,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Given transaction is not a token transfer" });
+  });
+
+  it("should return err with uusd for wrong treasury", async () => {
+    await initMocks(receiptUusd, minedTxUusd, parsedTxUusdWrongTreasury);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 31337,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 18597,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Given transaction is not a token transfer to treasury address" });
+  });
+
+  it("should post order on sandbox with uusd", async () => {
+    await initMocks(receiptUusd, minedTxUusd);
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: uusd,
+        chainId: 31337,
+        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
+        productId: 13959,
+        country: "US",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext, true);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(orderCard13959);
   });
 
   it("should post order on sandbox", async () => {
