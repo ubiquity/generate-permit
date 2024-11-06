@@ -7,13 +7,11 @@ export default defineWorkersConfig({
     alias: [{ find: "msw/node", replacement: "/node_modules/msw/lib/native/index.mjs" }],
   },
   test: {
-    //setupFiles: ["/tests/setup.ts"],
     dir: "tests/unit",
     poolOptions: {
       workers: {
         wrangler: { configPath: "./tests/wrangler-vitest.toml" },
       },
-      main: "./functions/get-best-card.ts",
     },
   },
 });
