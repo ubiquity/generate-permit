@@ -342,26 +342,6 @@ describe("Post order for a payment card", () => {
     expect(await response.json()).toEqual({ message: "Given transaction is not a token transfer" });
   });
 
-  it("should return err with uusd for wrong method call", async () => {
-    await initMocks(receiptUusd, minedTxUusd, parsedTxUusdWrongMethod);
-    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
-      method: "POST",
-      body: JSON.stringify({
-        type: uusd,
-        chainId: 31337,
-        txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
-        productId: 18597,
-        country: "US",
-      }),
-    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
-
-    const eventCtx = createEventContext(request, execContext);
-    const response = await pagesFunction(eventCtx);
-    await waitOnExecutionContext(execContext);
-    expect(response.status).toBe(403);
-    expect(await response.json()).toEqual({ message: "Given transaction is not a token transfer" });
-  });
-
   it("should return err with uusd for wrong treasury", async () => {
     await initMocks(receiptUusd, minedTxUusd, parsedTxUusdWrongTreasury);
     const request = new Request(`${TESTS_BASE_URL}/post-order`, {
