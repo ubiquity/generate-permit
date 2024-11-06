@@ -28,6 +28,7 @@
     "test:run": "cypress run",
     "test:open": "cypress open",
     "test:fund": "tsx cypress/scripts/funding.ts",
+    "test:unit": "npx vitest run",
     "knip": "knip --config .github/knip.ts",
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
