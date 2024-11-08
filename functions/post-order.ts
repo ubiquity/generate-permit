@@ -1,7 +1,7 @@
-import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
-import { JsonRpcProvider } from "@ethersproject/providers/lib/json-rpc-provider";
+import { JsonRpcProvider, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+
 import { BigNumber } from "ethers";
-import { Interface, TransactionDescription } from "ethers/lib/utils";
+import { Interface, TransactionDescription } from "@ethersproject/abi";
 import { Tokens, chainIdToRewardTokenMap, giftCardTreasuryAddress, permit2Address } from "../shared/constants";
 import { getFastestRpcUrl, getGiftCardOrderId } from "../shared/helpers";
 import { getGiftCardValue, isClaimableForAmount } from "../shared/pricing";
@@ -9,11 +9,12 @@ import { ExchangeRate, GiftCard } from "../shared/types";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, findBestCard, getAccessToken, getBaseUrl } from "./helpers";
-import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
+import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { postOrderParamsSchema } from "../shared/api-types";
 import { permitAllowedChainIds, ubiquityDollarAllowedChainIds, ubiquityDollarChainAddresses } from "../shared/constants";
+import { findBestCard } from "./utils/best-card-finder";
 
 export async function onRequest(ctx: Context): Promise<Response> {
   try {
@@ -110,7 +111,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 }
 
 export async function getGiftCardById(productId: number, accessToken: AccessToken): Promise<GiftCard> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/products/${productId}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/products/${productId}`;
   console.log(`Retrieving gift cards from ${url}`);
   const options = {
     method: "GET",
@@ -138,7 +139,7 @@ export async function getGiftCardById(productId: number, accessToken: AccessToke
 }
 
 async function orderGiftCard(productId: number, cardValue: number, identifier: string, accessToken: AccessToken): Promise<ReloadlyOrderResponse> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/orders`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/orders`;
   console.log(`Placing order at url: ${url}`);
 
   const requestBody = JSON.stringify({
@@ -189,7 +190,7 @@ async function isDuplicateOrder(orderId: string, accessToken: AccessToken): Prom
 }
 
 async function getExchangeRate(usdAmount: number, fromCurrency: string, accessToken: AccessToken): Promise<ExchangeRate> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/fx-rate?currencyCode=${fromCurrency}&amount=${usdAmount}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/fx-rate?currencyCode=${fromCurrency}&amount=${usdAmount}`;
   console.log(`Retrieving url ${url}`);
   const options = {
     method: "GET",
