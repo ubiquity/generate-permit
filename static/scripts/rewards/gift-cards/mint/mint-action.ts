@@ -32,48 +32,39 @@ export function attachMintAction(giftCard: GiftCard, app: AppState) {
 }
 
 async function mintGiftCard(productId: number, app: AppState) {
-  if (app.signer) {
-    const country = await getUserCountryCode();
-    if (!country) {
-      toaster.create("error", "Failed to detect your location to pick a suitable card for you.");
+  if (!app.signer) {
+    toaster.create("error", "Connect your wallet.");
+    return;
+  }
+  const country = await getUserCountryCode();
+  if (!country) {
+    toaster.create("error", "Failed to detect your location to pick a suitable card for you.");
+    return;
+  }
+
+  const txHash = getIncompleteClaimTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
+
+  if (txHash) {
+    const order = await postOrder({
+      type: "permit",
+      chainId: app.signer.provider.network.chainId,
+      txHash: txHash,
+      productId,
+      country: country,
+    });
+    if (!order) {
+      toaster.create("error", "Order failed. Try again in a few minutes.");
       return;
     }
-
-    const isClaimable = await checkPermitClaimable(app);
-    if (isClaimable) {
-      const permit2Contract = new ethers.Contract(permit2Address, permit2Abi, app.signer);
-      if (!permit2Contract) return;
-
-      const reward = {
-        ...app.reward,
-      };
-      reward.beneficiary = giftCardTreasuryAddress;
-
-      const tx = await transferFromPermit(permit2Contract, reward, "Processing... Please wait. Do not close this page.");
-      if (!tx) return;
-      await waitForTransaction(tx, `Transaction confirmed. Minting your card now.`);
-
-      const order = await postOrder({
-        type: "permit",
-        chainId: app.signer.provider.network.chainId,
-        txHash: tx.hash,
-        productId,
-        country: country,
-      });
-      if (!order) {
-        toaster.create("error", "Order failed. Try again later.");
-        return;
-      }
-
-      await checkForMintingDelay(app);
-    } else {
-      toaster.create("error", "Connect your wallet to proceed.");
-    }
+    await checkForMintingDelay(app);
+  } else {
+    toaster.create("error", "Card minting failed. Try again in a few minutes.");
   }
 }
 
 async function checkForMintingDelay(app: AppState) {
   if (await hasMintingFinished(app)) {
+    removeIncompleteClaimTx(app.reward.nonce);
     await initClaimGiftCard(app);
   } else {
     const interval = setInterval(async () => {
@@ -88,6 +79,32 @@ async function checkForMintingDelay(app: AppState) {
   }
 }
 
+async function claimPermitToCardTreasury(app: AppState) {
+  if (!app.signer) {
+    toaster.create("error", "Connect your wallet.");
+    return;
+  }
+  const isClaimable = await checkPermitClaimable(app);
+  if (isClaimable) {
+    const permit2Contract = new ethers.Contract(permit2Address, permit2Abi, app.signer);
+    if (!permit2Contract) return;
+
+    const reward = {
+      ...app.reward,
+    };
+    reward.beneficiary = giftCardTreasuryAddress;
+
+    const tx = await transferFromPermit(permit2Contract, reward, "Processing... Please wait. Do not close this page.");
+    if (!tx) return;
+
+    storeIncompleteClaimTx(app.reward.nonce, tx.hash);
+    await waitForTransaction(tx, `Transaction confirmed. Minting your card now.`, app.signer.provider.network.chainId);
+    return tx.hash;
+  } else {
+    toaster.create("error", "Connect your wallet to proceed.");
+  }
+}
+
 async function hasMintingFinished(app: AppState): Promise<boolean> {
   const retrieveOrderUrl = `${getApiBaseUrl()}/get-order?orderId=${getGiftCardOrderId(app.reward.beneficiary, app.reward.signature)}`;
   const orderResponse = await fetch(retrieveOrderUrl, {
@@ -98,4 +115,29 @@ async function hasMintingFinished(app: AppState): Promise<boolean> {
   });
 
   return orderResponse.status != 404;
+}
+
+const storageKey = "incompleteClaims";
+
+function getIncompleteClaimTx(permitNonce: string): string | null {
+  const incompleteClaims = localStorage.getItem(storageKey);
+  return incompleteClaims ? JSON.parse(incompleteClaims)[permitNonce] : null;
+}
+
+function storeIncompleteClaimTx(permitNonce: string, txHash: string) {
+  let incompleteClaims: { [key: string]: string } = { [permitNonce]: txHash };
+  const oldIncompleteClaims = localStorage.getItem(storageKey);
+  if (oldIncompleteClaims) {
+    incompleteClaims = { ...incompleteClaims, ...JSON.parse(oldIncompleteClaims) };
+  }
+  localStorage.setItem(storageKey, JSON.stringify(incompleteClaims));
+}
+
+function removeIncompleteClaimTx(permitNonce: string) {
+  const incompleteClaims = localStorage.getItem(storageKey);
+  if (incompleteClaims) {
+    const incompleteClaimsObj = JSON.parse(incompleteClaims);
+    delete incompleteClaimsObj[permitNonce];
+    localStorage.setItem(storageKey, JSON.stringify(incompleteClaimsObj));
+  }
 }
