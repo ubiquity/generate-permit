@@ -1,9 +1,9 @@
 import { JsonRpcProvider, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
-
+import { verifyMessage } from "@ethersproject/wallet";
 import { BigNumber } from "ethers";
 import { Interface, TransactionDescription } from "@ethersproject/abi";
 import { Tokens, chainIdToRewardTokenMap, giftCardTreasuryAddress, permit2Address } from "../shared/constants";
-import { getFastestRpcUrl, getGiftCardOrderId } from "../shared/helpers";
+import { getFastestRpcUrl, getGiftCardOrderId, getMintMessageToSign } from "../shared/helpers";
 import { getGiftCardValue, isClaimableForAmount } from "../shared/pricing";
 import { ExchangeRate, GiftCard } from "../shared/types";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
@@ -12,7 +12,7 @@ import { getTransactionFromOrderId } from "./get-order";
 import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";
-import { postOrderParamsSchema } from "../shared/api-types";
+import { PostOrderParams, postOrderParamsSchema } from "../shared/api-types";
 import { permitAllowedChainIds, ubiquityDollarAllowedChainIds, ubiquityDollarChainAddresses } from "../shared/constants";
 import { findBestCard } from "./utils/best-card-finder";
 
@@ -48,6 +48,8 @@ export async function onRequest(ctx: Context): Promise<Response> {
     if (!txReceipt) {
       throw new Error(`Given transaction has not been mined yet. Please wait for it to be mined.`);
     }
+
+    validateSignedMessage(result.data, txReceipt);
 
     let amountDaiWei;
     let orderId;
@@ -290,5 +292,24 @@ function validatePermitTransaction(txParsed: TransactionDescription, txReceipt: 
       })
     );
     return errorResponse;
+  }
+}
+
+function validateSignedMessage(postOrderParams: PostOrderParams, txReceipt: TransactionReceipt) {
+  const { type, productId, txHash, chainId, country, signedMessage } = postOrderParams;
+  const mintMessageToSign = getMintMessageToSign(type, chainId, txHash, productId, country);
+  const signingWallet = verifyMessage(mintMessageToSign, signedMessage).toLocaleLowerCase();
+  if (signingWallet != txReceipt.from.toLowerCase()) {
+    throw new Error(
+      `Signed message verification failed: ${JSON.stringify({
+        wallet: txReceipt.from.toLowerCase(),
+        signedMessage,
+        type,
+        chainId,
+        txHash,
+        productId,
+        country,
+      })}`
+    );
   }
 }

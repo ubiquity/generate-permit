@@ -9,9 +9,10 @@ import { toaster } from "../../toaster";
 import { checkPermitClaimable, transferFromPermit, waitForTransaction } from "../../web3/erc20-permit";
 import { getApiBaseUrl, getUserCountryCode } from "../helpers";
 import { initClaimGiftCard } from "../index";
-import { getGiftCardOrderId } from "../../../../../shared/helpers";
+import { getGiftCardOrderId, getMintMessageToSign } from "../../../../../shared/helpers";
 import { postOrder } from "../../../shared/api";
 import { getIncompleteMintTx, removeIncompleteMintTx, storeIncompleteMintTx } from "./mint-tx-tracker";
+import { PostOrderParams } from "../../../../../shared/api-types";
 
 export function attachMintAction(giftCard: GiftCard, app: AppState) {
   const mintBtn: HTMLElement | null = document.getElementById("mint");
@@ -37,22 +38,33 @@ async function mintGiftCard(productId: number, app: AppState) {
     toaster.create("error", "Connect your wallet.");
     return;
   }
+
   const country = await getUserCountryCode();
   if (!country) {
     toaster.create("error", "Failed to detect your location to pick a suitable card for you.");
     return;
   }
 
-  const txHash = getIncompleteMintTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
+  const txHash: string = getIncompleteMintTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
 
   if (txHash) {
+    let signedMessage = "";
+    try {
+      signedMessage = await app.signer.signMessage(getMintMessageToSign("permit", app.signer.provider.network.chainId, txHash, productId, country));
+    } catch (error) {
+      toaster.create("error", "You did not sign the message to mint a payment card.");
+      return;
+    }
+
     const order = await postOrder({
       type: "permit",
       chainId: app.signer.provider.network.chainId,
       txHash: txHash,
       productId,
       country: country,
-    });
+      signedMessage: signedMessage,
+    } as PostOrderParams);
+
     if (!order) {
       toaster.create("error", "Order failed. Try again in a few minutes.");
       return;
