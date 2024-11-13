@@ -11,6 +11,7 @@ import { getApiBaseUrl, getUserCountryCode } from "../helpers";
 import { initClaimGiftCard } from "../index";
 import { getGiftCardOrderId } from "../../../../../shared/helpers";
 import { postOrder } from "../../../shared/api";
+import { getIncompleteMintTx, removeIncompleteMintTx, storeIncompleteMintTx } from "./mint-tx-tracker";
 
 export function attachMintAction(giftCard: GiftCard, app: AppState) {
   const mintBtn: HTMLElement | null = document.getElementById("mint");
@@ -42,7 +43,7 @@ async function mintGiftCard(productId: number, app: AppState) {
     return;
   }
 
-  const txHash = getIncompleteClaimTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
+  const txHash = getIncompleteMintTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
 
   if (txHash) {
     const order = await postOrder({
@@ -64,7 +65,7 @@ async function mintGiftCard(productId: number, app: AppState) {
 
 async function checkForMintingDelay(app: AppState) {
   if (await hasMintingFinished(app)) {
-    removeIncompleteClaimTx(app.reward.nonce);
+    removeIncompleteMintTx(app.reward.nonce);
     await initClaimGiftCard(app);
   } else {
     const interval = setInterval(async () => {
@@ -97,7 +98,7 @@ async function claimPermitToCardTreasury(app: AppState) {
     const tx = await transferFromPermit(permit2Contract, reward, "Processing... Please wait. Do not close this page.");
     if (!tx) return;
 
-    storeIncompleteClaimTx(app.reward.nonce, tx.hash);
+    storeIncompleteMintTx(app.reward.nonce, tx.hash);
     await waitForTransaction(tx, `Transaction confirmed. Minting your card now.`, app.signer.provider.network.chainId);
     return tx.hash;
   } else {
@@ -115,29 +116,4 @@ async function hasMintingFinished(app: AppState): Promise<boolean> {
   });
 
   return orderResponse.status != 404;
-}
-
-const storageKey = "incompleteClaims";
-
-function getIncompleteClaimTx(permitNonce: string): string | null {
-  const incompleteClaims = localStorage.getItem(storageKey);
-  return incompleteClaims ? JSON.parse(incompleteClaims)[permitNonce] : null;
-}
-
-function storeIncompleteClaimTx(permitNonce: string, txHash: string) {
-  let incompleteClaims: { [key: string]: string } = { [permitNonce]: txHash };
-  const oldIncompleteClaims = localStorage.getItem(storageKey);
-  if (oldIncompleteClaims) {
-    incompleteClaims = { ...incompleteClaims, ...JSON.parse(oldIncompleteClaims) };
-  }
-  localStorage.setItem(storageKey, JSON.stringify(incompleteClaims));
-}
-
-function removeIncompleteClaimTx(permitNonce: string) {
-  const incompleteClaims = localStorage.getItem(storageKey);
-  if (incompleteClaims) {
-    const incompleteClaimsObj = JSON.parse(incompleteClaims);
-    delete incompleteClaimsObj[permitNonce];
-    localStorage.setItem(storageKey, JSON.stringify(incompleteClaimsObj));
-  }
 }
