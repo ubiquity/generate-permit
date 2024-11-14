@@ -49,8 +49,6 @@ export async function onRequest(ctx: Context): Promise<Response> {
       throw new Error(`Given transaction has not been mined yet. Please wait for it to be mined.`);
     }
 
-    validateSignedMessage(result.data, txReceipt);
-
     let amountDaiWei;
     let orderId;
 
@@ -76,6 +74,8 @@ export async function onRequest(ctx: Context): Promise<Response> {
       if (errorResponse) {
         return errorResponse;
       }
+
+      validateSignedMessage(result.data, txReceipt);
 
       amountDaiWei = txParsed.args.transferDetails.requestedAmount;
       orderId = getGiftCardOrderId(txReceipt.from, txParsed.args.signature);

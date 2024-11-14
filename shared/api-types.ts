@@ -19,7 +19,7 @@ export const postOrderParamsSchema = z.object({
   txHash: z.string(),
   chainId: z.coerce.number(),
   country: z.string(),
-  signedMessage: z.string(),
+  signedMessage: z.optional(z.string()),
 });
 
 export type PostOrderParams = z.infer<typeof postOrderParamsSchema>;
