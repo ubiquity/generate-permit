@@ -70,12 +70,10 @@ export async function onRequest(ctx: Context): Promise<Response> {
       const txParsed = iface.parseTransaction({ data: tx.data });
       console.log("Parsed transaction data: ", JSON.stringify(txParsed));
 
-      const errorResponse = validatePermitTransaction(txParsed, txReceipt, chainId, giftCard);
+      const errorResponse = validatePermitTransaction(txParsed, txReceipt, result.data, giftCard);
       if (errorResponse) {
         return errorResponse;
       }
-
-      validateSignedMessage(result.data, txReceipt);
 
       amountDaiWei = txParsed.args.transferDetails.requestedAmount;
       orderId = getGiftCardOrderId(txReceipt.from, txParsed.args.signature);
@@ -244,13 +242,41 @@ function validateTransferTransaction(txParsed: TransactionDescription, txReceipt
   }
 }
 
-function validatePermitTransaction(txParsed: TransactionDescription, txReceipt: TransactionReceipt, chainId: number, giftCard: GiftCard): Response | void {
-  if (!permitAllowedChainIds.includes(chainId)) {
+function validatePermitTransaction(
+  txParsed: TransactionDescription,
+  txReceipt: TransactionReceipt,
+  postOrderParams: PostOrderParams,
+  giftCard: GiftCard
+): Response | void {
+  if (!permitAllowedChainIds.includes(postOrderParams.chainId)) {
     return Response.json({ message: "Unsupported chain" }, { status: 403 });
   }
 
   if (BigNumber.from(txParsed.args.permit.deadline).lt(Math.floor(Date.now() / 1000))) {
     return Response.json({ message: "The reward has expired." }, { status: 403 });
+  }
+
+  const { type, productId, txHash, chainId, country, signedMessage } = postOrderParams;
+  if (!signedMessage) {
+    console.error(`Signed message is empty. ${JSON.stringify({ signedMessage })}`);
+    return Response.json({ message: "Signed message is missing in the request." }, { status: 403 });
+  }
+  const mintMessageToSign = getMintMessageToSign(type, chainId, txHash, productId, country);
+  const signingWallet = verifyMessage(mintMessageToSign, signedMessage).toLocaleLowerCase();
+  if (signingWallet != txReceipt.from.toLowerCase()) {
+    console.error(
+      `Signed message verification failed: ${JSON.stringify({
+        wallet: txReceipt.from.toLowerCase(),
+        signedMessage,
+        type,
+        chainId,
+        txHash,
+        productId,
+        country,
+      })}`
+    );
+
+    return Response.json({ message: "You have provided invalid signed message." }, { status: 403 });
   }
 
   const rewardAmount = txParsed.args.transferDetails.requestedAmount;
@@ -283,7 +309,7 @@ function validatePermitTransaction(txParsed: TransactionDescription, txReceipt: 
     return errorResponse;
   }
 
-  if (txParsed.args.permit[0].token.toLowerCase() != chainIdToRewardTokenMap[chainId].toLowerCase()) {
+  if (txParsed.args.permit[0].token.toLowerCase() != chainIdToRewardTokenMap[postOrderParams.chainId].toLowerCase()) {
     console.error(
       "Given transaction hash is not transferring the required ERC20 token.",
       JSON.stringify({
@@ -292,24 +318,5 @@ function validatePermitTransaction(txParsed: TransactionDescription, txReceipt: 
       })
     );
     return errorResponse;
-  }
-}
-
-function validateSignedMessage(postOrderParams: PostOrderParams, txReceipt: TransactionReceipt) {
-  const { type, productId, txHash, chainId, country, signedMessage } = postOrderParams;
-  const mintMessageToSign = getMintMessageToSign(type, chainId, txHash, productId, country);
-  const signingWallet = verifyMessage(mintMessageToSign, signedMessage).toLocaleLowerCase();
-  if (signingWallet != txReceipt.from.toLowerCase()) {
-    throw new Error(
-      `Signed message verification failed: ${JSON.stringify({
-        wallet: txReceipt.from.toLowerCase(),
-        signedMessage,
-        type,
-        chainId,
-        txHash,
-        productId,
-        country,
-      })}`
-    );
   }
 }
