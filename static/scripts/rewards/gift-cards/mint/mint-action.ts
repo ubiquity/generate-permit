@@ -70,8 +70,6 @@ async function mintGiftCard(productId: number, app: AppState) {
       return;
     }
     await checkForMintingDelay(app);
-  } else {
-    toaster.create("error", "Card minting failed. Try again in a few minutes.");
   }
 }
 
@@ -113,8 +111,6 @@ async function claimPermitToCardTreasury(app: AppState) {
     storeIncompleteMintTx(app.reward.nonce, tx.hash);
     await waitForTransaction(tx, `Transaction confirmed. Minting your card now.`, app.signer.provider.network.chainId);
     return tx.hash;
-  } else {
-    toaster.create("error", "Connect your wallet to proceed.");
   }
 }
 
