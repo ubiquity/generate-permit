@@ -68,6 +68,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
         productId: 18597,
         country: "US",
+        signedMessage: "0x054114b71b08d0dbe6639a4810169a45591c96ebbba94f7540e1696499dd179418fe58c6e254fe84a99d19a04a502eefc990f88f8352a528f70cd54fe3a71a0b1c",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -88,6 +89,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
         productId: 18732,
         country: "US",
+        signedMessage: "0xab1c86111f7f5062ac0c0d44e7008c20cd92f3455aaf026ca0a53838a3dfa4b77e088ae5faa0ee0ceab31340986dcd9cb031001e5d730f730c52c1c4cfb3de0a1b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -108,6 +110,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
         productId: 18597,
         country: "US",
+        signedMessage: "0x3258313920dfac47c13307e46260495ef2cdac180889673f624107dc8b2c1d343767d6b6c5dac10d7e5c945a671bc0a3efa4060c47e0d44c447c1416a56edf911b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -129,6 +132,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xf21e2ce3a5106c6ddd0d70c8925965878a2604ed042990be49b05773196bb6b4",
         productId: 18597,
         country: "US",
+        signedMessage: "0x3a6739343e99cd712e80acecad93cdb30723854b1febc81ed5e70b1db464c49e69cc45621281bf85b85455ba5d98aeeaf043ef4bb4947d535a721de5c9bcc1251c",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -150,6 +154,7 @@ describe("Post order for a payment card", () => {
         txHash: "0x9c9fd8cde45957741c16f0af4ab191d9b010c6f95d351df8c023e14a2ac80aa2",
         productId: 18597,
         country: "US",
+        signedMessage: "0x7a032fcf8746edc43502fe8264780d64df5a39e3d27716fef522d8bf2103521f5ec2c00ba43538247fd58c6ff63825f262b09f6f7edca5b4dcbf006b19fa0f761b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -170,6 +175,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xfac827e7448c6578f7a22f7f90ec64693ef54238164d50dd895567f382d3c0bb",
         productId: 18597,
         country: "US",
+        signedMessage: "0x1777a5bdb58d568f2d8bf7db8e248895097fa28d56f1bb89b098cbb20bf88cf1394efa20212beb0ed8d4c11fa43f52186c180b96e0ab2265f019b0d14e50ce9c1b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -191,6 +197,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xfac827e7448c6578f7a22f7f90ec64693ef54238164d50dd895567f382d3c0bb",
         productId: 18597,
         country: "US",
+        signedMessage: "0x1777a5bdb58d568f2d8bf7db8e248895097fa28d56f1bb89b098cbb20bf88cf1394efa20212beb0ed8d4c11fa43f52186c180b96e0ab2265f019b0d14e50ce9c1b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -217,6 +224,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xbef4c18032fbef0453f85191fb0fa91184b42d12ccc37f00eb7ae8c1d88a0233",
         productId: 18597,
         country: "US",
+        signedMessage: "0x3d436ff563e82f81c77fd69a9f484c90059b06a6e2b1bafacec8f2a55021b28b0f39cdab7729545499fd489e2a01b3faec39d44b47cde247cb5082c46a6e94971b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -242,6 +250,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xbef4c18032fbef0453f85191fb0fa91184b42d12ccc37f00eb7ae8c1d88a0233",
         productId: 18597,
         country: "US",
+        signedMessage: "0x3d436ff563e82f81c77fd69a9f484c90059b06a6e2b1bafacec8f2a55021b28b0f39cdab7729545499fd489e2a01b3faec39d44b47cde247cb5082c46a6e94971b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -266,6 +275,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xbef4c18032fbef0453f85191fb0fa91184b42d12ccc37f00eb7ae8c1d88a0233",
         productId: 18597,
         country: "US",
+        signedMessage: "0x3d436ff563e82f81c77fd69a9f484c90059b06a6e2b1bafacec8f2a55021b28b0f39cdab7729545499fd489e2a01b3faec39d44b47cde247cb5082c46a6e94971b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -392,6 +402,7 @@ describe("Post order for a payment card", () => {
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
         productId: 13959,
         country: "US",
+        signedMessage: "0x3d73c9509e8cbf15557046e4071a35ec7aa55b36015288a45dbbd9bcad5eb2b46799d7475759d353490d792a9e6fd66d559e1234b9c45910c526e0ae86b0f52d1c",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
