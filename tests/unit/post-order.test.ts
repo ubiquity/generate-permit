@@ -186,6 +186,48 @@ describe("Post order for a payment card", () => {
     expect(await response.json()).toEqual({ message: "The reward has expired." });
   });
 
+  it("should return err for missing signed message", async () => {
+    await initMocks();
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
+        productId: 18597,
+        country: "US",
+        signedMessage: "",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "Signed message is missing in the request." });
+  });
+
+  it("should return err for invalid signed message", async () => {
+    await initMocks();
+    const request = new Request(`${TESTS_BASE_URL}/post-order`, {
+      method: "POST",
+      body: JSON.stringify({
+        type: "permit",
+        chainId: 31337,
+        txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
+        productId: 18597,
+        country: "US",
+        signedMessage: "0x1777a5bdb58d568f2d8bf7db8e248895097fa28d56f1bb89b098cbb20bf88cf1394efa20212beb0ed8d4c11fa43f52186c180b96e0ab2265f019b0d14e50ce9c1b",
+      }),
+    }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
+
+    const eventCtx = createEventContext(request, execContext);
+    const response = await pagesFunction(eventCtx);
+    await waitOnExecutionContext(execContext);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toEqual({ message: "You have provided invalid signed message." });
+  });
+
   it("should return err order with tx hash that not permit2 interaction", async () => {
     await initMocks(receiptNotPermit2, minedTxNotPermit2);
 
