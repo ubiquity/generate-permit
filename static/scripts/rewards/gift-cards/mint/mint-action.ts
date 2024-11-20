@@ -48,7 +48,7 @@ async function mintGiftCard(productId: number, app: AppState) {
   const txHash: string = getIncompleteMintTx(app.reward.nonce) || (await claimPermitToCardTreasury(app));
 
   if (txHash) {
-    let signedMessage = "";
+    let signedMessage;
     try {
       signedMessage = await app.signer.signMessage(getMintMessageToSign("permit", app.signer.provider.network.chainId, txHash, productId, country));
     } catch (error) {
