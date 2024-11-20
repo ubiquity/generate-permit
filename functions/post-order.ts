@@ -57,9 +57,9 @@ export async function onRequest(ctx: Context): Promise<Response> {
       const txParsed = iface.parseTransaction({ data: tx.data });
       console.log("Parsed transaction data: ", JSON.stringify(txParsed));
 
-      const errorResponse = validateTransferTransaction(txParsed, txReceipt, chainId, giftCard);
-      if (errorResponse) {
-        return errorResponse;
+      const validationErr = validateTransferTransaction(txParsed, txReceipt, chainId, giftCard);
+      if (validationErr) {
+        return Response.json({ message: validationErr }, { status: 403 });
       }
 
       orderId = getGiftCardOrderId(txReceipt.from, txHash);
@@ -70,9 +70,9 @@ export async function onRequest(ctx: Context): Promise<Response> {
       const txParsed = iface.parseTransaction({ data: tx.data });
       console.log("Parsed transaction data: ", JSON.stringify(txParsed));
 
-      const errorResponse = validatePermitTransaction(txParsed, txReceipt, result.data, giftCard);
-      if (errorResponse) {
-        return errorResponse;
+      const validationErr = validatePermitTransaction(txParsed, txReceipt, result.data, giftCard);
+      if (validationErr) {
+        return Response.json({ message: validationErr }, { status: 403 });
       }
 
       amountDaiWei = txParsed.args.transferDetails.requestedAmount;
@@ -217,29 +217,31 @@ async function getExchangeRate(usdAmount: number, fromCurrency: string, accessTo
   return responseJson as ExchangeRate;
 }
 
-function validateTransferTransaction(txParsed: TransactionDescription, txReceipt: TransactionReceipt, chainId: number, giftCard: GiftCard): Response | void {
+function validateTransferTransaction(txParsed: TransactionDescription, txReceipt: TransactionReceipt, chainId: number, giftCard: GiftCard): string | null {
   const transferAmount = txParsed.args[1];
 
   if (!ubiquityDollarAllowedChainIds.includes(chainId)) {
-    return Response.json({ message: "Unsupported chain" }, { status: 403 });
+    return "Unsupported chain";
   }
 
   if (!isClaimableForAmount(giftCard, transferAmount)) {
-    return Response.json({ message: "Your reward amount is either too high or too low to buy this card." }, { status: 403 });
+    return "Your reward amount is either too high or too low to buy this card.";
   }
 
   if (txParsed.functionFragment.name != "transfer") {
-    return Response.json({ message: "Given transaction is not a token transfer" }, { status: 403 });
+    return "Given transaction is not a token transfer";
   }
 
   const ubiquityDollarErc20Address = ubiquityDollarChainAddresses[chainId];
   if (txReceipt.to.toLowerCase() != ubiquityDollarErc20Address.toLowerCase()) {
-    return Response.json({ message: "Given transaction is not a Ubiquity Dollar transfer" }, { status: 403 });
+    return "Given transaction is not a Ubiquity Dollar transfer";
   }
 
   if (txParsed.args[0].toLowerCase() != giftCardTreasuryAddress.toLowerCase()) {
-    return Response.json({ message: "Given transaction is not a token transfer to treasury address" }, { status: 403 });
+    return "Given transaction is not a token transfer to treasury address";
   }
+
+  return null;
 }
 
 function validatePermitTransaction(
@@ -247,19 +249,19 @@ function validatePermitTransaction(
   txReceipt: TransactionReceipt,
   postOrderParams: PostOrderParams,
   giftCard: GiftCard
-): Response | void {
+): string | null {
   if (!permitAllowedChainIds.includes(postOrderParams.chainId)) {
-    return Response.json({ message: "Unsupported chain" }, { status: 403 });
+    return "Unsupported chain";
   }
 
   if (BigNumber.from(txParsed.args.permit.deadline).lt(Math.floor(Date.now() / 1000))) {
-    return Response.json({ message: "The reward has expired." }, { status: 403 });
+    return "The reward has expired.";
   }
 
   const { type, productId, txHash, chainId, country, signedMessage } = postOrderParams;
   if (!signedMessage) {
     console.error(`Signed message is empty. ${JSON.stringify({ signedMessage })}`);
-    return Response.json({ message: "Signed message is missing in the request." }, { status: 403 });
+    return "Signed message is missing in the request.";
   }
   const mintMessageToSign = getMintMessageToSign(type, chainId, txHash, productId, country);
   const signingWallet = verifyMessage(mintMessageToSign, signedMessage).toLocaleLowerCase();
@@ -275,21 +277,20 @@ function validatePermitTransaction(
         country,
       })}`
     );
-
-    return Response.json({ message: "You have provided invalid signed message." }, { status: 403 });
+    return "You have provided invalid signed message.";
   }
 
   const rewardAmount = txParsed.args.transferDetails.requestedAmount;
 
   if (!isClaimableForAmount(giftCard, rewardAmount)) {
-    return Response.json({ message: "Your reward amount is either too high or too low to buy this card." }, { status: 403 });
+    return "Your reward amount is either too high or too low to buy this card.";
   }
 
-  const errorResponse = Response.json({ message: "Transaction is not authorized to purchase gift card." }, { status: 403 });
+  const wrongContractErr = "Transaction is not authorized to purchase gift card.";
 
   if (txReceipt.to.toLowerCase() != permit2Address.toLowerCase()) {
     console.error("Given transaction hash is not an interaction with permit2Address", `txReceipt.to=${txReceipt.to}`, `permit2Address=${permit2Address}`);
-    return errorResponse;
+    return wrongContractErr;
   }
 
   if (txParsed.args.transferDetails.to.toLowerCase() != giftCardTreasuryAddress.toLowerCase()) {
@@ -298,7 +299,7 @@ function validatePermitTransaction(
       `txParsed.args.transferDetails.to=${txParsed.args.transferDetails.to}`,
       `giftCardTreasuryAddress=${giftCardTreasuryAddress}`
     );
-    return errorResponse;
+    return wrongContractErr;
   }
 
   if (txParsed.functionFragment.name != "permitTransferFrom") {
@@ -306,7 +307,7 @@ function validatePermitTransaction(
       "Given transaction hash is not call to contract function permitTransferFrom",
       `txParsed.functionFragment.name=${txParsed.functionFragment.name}`
     );
-    return errorResponse;
+    return wrongContractErr;
   }
 
   if (txParsed.args.permit[0].token.toLowerCase() != chainIdToRewardTokenMap[postOrderParams.chainId].toLowerCase()) {
@@ -317,6 +318,8 @@ function validatePermitTransaction(
         requiredToken: Tokens.WXDAI.toLowerCase(),
       })
     );
-    return errorResponse;
+    return wrongContractErr;
   }
+
+  return null;
 }
