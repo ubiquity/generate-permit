@@ -43,10 +43,9 @@ export async function onRequest(ctx: Context): Promise<Response> {
 
 export async function getTransactionFromOrderId(orderId: string, accessToken: AccessToken): Promise<OrderTransaction> {
   const nowFormatted = new Date().toISOString().replace("T", " ").substring(0, 19); //// yyyy-mm-dd HH:mm:ss
-  const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
-  const oneYearAgoFormatted = oneYearAgo.toISOString().replace("T", " ").substring(0, 19);
+  const epochStartFormatted = "1970-01-01 00:00:00";
 
-  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/reports/transactions?size=1&page=1&customIdentifier=${orderId}&startDate=${oneYearAgoFormatted}&endDate=${nowFormatted}`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/reports/transactions?size=1&page=1&customIdentifier=${orderId}&startDate=${epochStartFormatted}&endDate=${nowFormatted}`;
   console.log(`Retrieving transaction from ${url}`);
   const options = {
     method: "GET",
