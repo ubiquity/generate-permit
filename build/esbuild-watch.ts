@@ -7,5 +7,7 @@ async function watch() {
   console.log("Watching...");
 }
 
-// This MUST NOT be awaited.
-void watch();
+// The following expression MUST NOT be awaited.
+void watch().catch((err) => {
+  console.error("Error watching:", err);
+});
