@@ -1,5 +1,5 @@
 import { verifyMessage } from "@ethersproject/wallet";
-import { getGiftCardOrderId, getMessageToSign } from "../shared/helpers";
+import { getGiftCardOrderId, getRevealMessageToSign } from "../shared/helpers";
 import { getRedeemCodeParamsSchema } from "../shared/api-types";
 import { getTransactionFromOrderId } from "./get-order";
 import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
@@ -29,7 +29,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 
     const errorResponse = Response.json({ message: "Given details are not valid to redeem code." }, { status: 403 });
 
-    if (verifyMessage(getMessageToSign(transactionId), signedMessage) != wallet) {
+    if (verifyMessage(getRevealMessageToSign(transactionId), signedMessage) != wallet) {
       console.error(
         `Signed message verification failed: ${JSON.stringify({
           signedMessage,
