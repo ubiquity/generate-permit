@@ -1,4 +1,4 @@
-import { getMessageToSign } from "../../../../../shared/helpers";
+import { getRevealMessageToSign } from "../../../../../shared/helpers";
 import { RedeemCode, OrderTransaction } from "../../../../../shared/types";
 import { AppState } from "../../app-state";
 import { toaster } from "../../toaster";
@@ -12,10 +12,10 @@ export function attachRevealAction(transaction: OrderTransaction, app: AppState)
     const transactionId = document.getElementById("redeem-code")?.getAttribute("data-transaction-id");
     if (app?.signer && transactionId) {
       try {
-        const signedMessage = await app.signer.signMessage(getMessageToSign(Number(transactionId)));
+        const signedMessage = await app.signer.signMessage(getRevealMessageToSign(Number(transactionId)));
         await revealRedeemCode(transaction.transactionId, signedMessage, app);
       } catch (error) {
-        toaster.create("error", "User did not sign the message to reveal redeem code.");
+        toaster.create("error", "You did not sign the message to reveal redeem code.");
         revealBtn.setAttribute(loaderAttribute, "false");
       }
     } else {

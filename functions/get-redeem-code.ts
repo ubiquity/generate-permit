@@ -1,10 +1,10 @@
-import { verifyMessage } from "ethers/lib/utils";
-import { getGiftCardOrderId, getMessageToSign } from "../shared/helpers";
+import { verifyMessage } from "@ethersproject/wallet";
+import { getGiftCardOrderId, getRevealMessageToSign } from "../shared/helpers";
 import { getRedeemCodeParamsSchema } from "../shared/api-types";
 import { getTransactionFromOrderId } from "./get-order";
-import { commonHeaders, getAccessToken, getBaseUrl } from "./helpers";
-import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyRedeemCodeResponse } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
+import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
+import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyRedeemCodeResponse } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 import { RedeemCode } from "../shared/types";
 
 export async function onRequest(ctx: Context): Promise<Response> {
@@ -29,7 +29,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 
     const errorResponse = Response.json({ message: "Given details are not valid to redeem code." }, { status: 403 });
 
-    if (verifyMessage(getMessageToSign(transactionId), signedMessage) != wallet) {
+    if (verifyMessage(getRevealMessageToSign(transactionId), signedMessage) != wallet) {
       console.error(
         `Signed message verification failed: ${JSON.stringify({
           signedMessage,
@@ -42,12 +42,12 @@ export async function onRequest(ctx: Context): Promise<Response> {
     const orderId = getGiftCardOrderId(wallet, permitSig);
     const order = await getTransactionFromOrderId(orderId, accessToken);
 
-    if (order.transactionId != transactionId) {
+    if (order?.transactionId != transactionId) {
       console.error(
         `Given transaction does not match with retrieved transactionId using generated orderId: ${JSON.stringify({
           transactionId,
           orderId,
-          transactionIdFromOrder: order.transactionId,
+          transactionIdFromOrder: order?.transactionId,
         })}`
       );
       return errorResponse;
@@ -62,7 +62,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
 }
 
 export async function getRedeemCode(transactionId: number, accessToken: AccessToken): Promise<RedeemCode[]> {
-  const url = `${getBaseUrl(accessToken.isSandbox)}/orders/transactions/${transactionId}/cards`;
+  const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/orders/transactions/${transactionId}/cards`;
   console.log(`Retrieving redeem codes from ${url}`);
   const options = {
     method: "GET",

@@ -10,10 +10,21 @@ export function getGiftCardOrderId(rewardToAddress: string, signature: string) {
   return ethers.utils.keccak256(integrityBytes);
 }
 
-export function getMessageToSign(transactionId: number) {
+export function getRevealMessageToSign(transactionId: number) {
   return JSON.stringify({
     from: "pay.ubq.fi",
     transactionId: transactionId,
+  });
+}
+
+export function getMintMessageToSign(type: "permit" | "ubiquity-dollar", chainId: number, txHash: string, productId: number, country: string) {
+  return JSON.stringify({
+    from: "pay.ubq.fi",
+    type,
+    chainId,
+    txHash,
+    productId,
+    country,
   });
 }
 

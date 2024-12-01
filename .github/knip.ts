@@ -6,7 +6,7 @@ const config: KnipConfig = {
   ignore: ["src/types/config.ts", "**/__mocks__/**", "**/__fixtures__/**", "lib/**/*"],
   ignoreExportsUsedInFile: true,
   // eslint can also be safely ignored as per the docs: https://knip.dev/guides/handling-issues#eslint--jest
-  ignoreDependencies: ["eslint-config-prettier", "eslint-plugin-prettier"],
+  ignoreDependencies: ["eslint-config-prettier", "eslint-plugin-prettier", "cloudflare"],
   eslint: true,
   ignoreBinaries: ["forge"],
 };

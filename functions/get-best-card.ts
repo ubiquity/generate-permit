@@ -1,8 +1,9 @@
 import { BigNumber } from "ethers";
-import { getAccessToken, findBestCard } from "./helpers";
-import { Context } from "./types";
-import { validateEnvVars, validateRequestMethod } from "./validators";
 import { getBestCardParamsSchema } from "../shared/api-types";
+import { findBestCard } from "./utils/best-card-finder";
+import { getAccessToken } from "./utils/shared";
+import { Context } from "./utils/types";
+import { validateEnvVars, validateRequestMethod } from "./utils/validators";
 
 export async function onRequest(ctx: Context): Promise<Response> {
   try {
@@ -20,6 +21,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
     const { country, amount } = result.data;
 
     const accessToken = await getAccessToken(ctx.env);
+
     const bestCard = await findBestCard(country, BigNumber.from(amount), accessToken);
 
     if (bestCard) {

@@ -1,5 +1,5 @@
 import { isAllowed } from "../../../shared/allowed-country-list";
-import { getGiftCardOrderId, getMessageToSign, isGiftCardAvailable } from "../../../shared/helpers";
+import { getGiftCardOrderId, getRevealMessageToSign, isGiftCardAvailable } from "../../../shared/helpers";
 import { GiftCard, OrderTransaction, RedeemCode } from "../../../shared/types";
 import { getUserCountryCode } from "../rewards/gift-cards/helpers";
 import { getRedeemCodeHtml } from "../rewards/gift-cards/reveal/redeem-code-html";
@@ -233,7 +233,7 @@ export function attachRevealAction(transaction: OrderTransaction) {
 
     if (signer && transactionId) {
       try {
-        const signedMessage = await signer.signMessage(getMessageToSign(Number(transactionId)));
+        const signedMessage = await signer.signMessage(getRevealMessageToSign(Number(transactionId)));
         await revealRedeemCode(transaction.transactionId, address, txHash, signedMessage);
       } catch (error) {
         toaster.create("error", "User did not sign the message to reveal redeem code.");

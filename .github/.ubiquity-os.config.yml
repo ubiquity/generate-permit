@@ -344,10 +344,11 @@ plugins:
               - staging
               - production
   - uses:
-      - plugin: https://ubiquibot-command-start-stop-development.ubiquity.workers.dev
+      - plugin: https://ubiquity-os-command-start-stop-development.ubiquity.workers.dev
         with:
           reviewDelayTolerance: "3 Days"
           taskStaleTimeoutDuration: "30 Days"
           startRequiresWallet: true # default is true
+          requiredLabelsToStart: ["Priority: 3 (High)", "Priority: 4 (Urgent)", "Priority: 5 (Emergency)"]
   - uses:
       - plugin: ubiquity-os-marketplace/text-vector-embeddings@development
