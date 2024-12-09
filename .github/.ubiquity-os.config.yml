@@ -1,14 +1,14 @@
 plugins:
   - uses:
-      - plugin: https://ubiquibot-command-wallet-development.ubiquity.workers.dev
+      - plugin: https://ubiquity-os-command-wallet-main.ubiquity.workers.dev
         with:
           registerWalletWithVerification: false
   - uses:
-      - plugin: https://ubiquibot-command-query-user-development.ubiquity.workers.dev
+      - plugin: https://ubiquity-os-command-query-user-main.ubiquity.workers.dev
         with:
           allowPublicQuery: true
   - uses:
-      - plugin: https://ubiquibot-assistive-pricing-development.ubiquity.workers.dev
+      - plugin: ubiquity-os-marketplace/daemon-pricing@main
         with:
           labels:
             time:
