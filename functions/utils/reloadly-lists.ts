@@ -4,6 +4,13 @@
 export const fallbackIntlMastercard = {
   country: "United States",
   countryCode: "US",
+  name: "Mastercard Prepaid USD Debit (Virtual only) US",
+  sku: 18732,
+};
+
+export const fallbackIntlMastercardOld = {
+  country: "United States",
+  countryCode: "US",
   name: "Virtual MasterCard International USD US",
   sku: 18597,
 };
