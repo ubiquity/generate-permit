@@ -87,7 +87,7 @@ async function getFirstFallbackIntlMastercard(accessToken: AccessToken): Promise
   try {
     return await getGiftCardById(fallbackIntlMastercardFirst.sku, accessToken);
   } catch (e) {
-    console.error(`Failed to load international US mastercard: ${JSON.stringify(fallbackIntlMastercardFirst)}`, e);
+    console.error(`Failed to load first fallback mastercard: ${JSON.stringify(fallbackIntlMastercardFirst)}`, e);
     return null;
   }
 }
@@ -96,7 +96,7 @@ async function getSecondFallbackIntlMastercard(accessToken: AccessToken): Promis
   try {
     return await getGiftCardById(fallbackIntlMastercardSecond.sku, accessToken);
   } catch (e) {
-    console.error(`Failed to load international US mastercard: ${JSON.stringify(fallbackIntlMastercardSecond)}`, e);
+    console.error(`Failed to load second fallback mastercard: ${JSON.stringify(fallbackIntlMastercardSecond)}`, e);
     return null;
   }
 }
