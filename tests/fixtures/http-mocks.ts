@@ -19,9 +19,6 @@ import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_UR
  * Intercepts the routes and returns a custom payload
  */
 export const httpMocks = [
-  // http.get(`${getBaseUrl(true)}/products**`, () => {
-  //   return HttpResponse.json(bestCard);
-  // }),
   http.post(RELOADLY_AUTH_URL, () => {
     return HttpResponse.json({ access_token: "fooBar" });
   }),
@@ -95,22 +92,4 @@ export const httpMocks = [
   http.get(`${RELOADLY_SANDBOX_API_URL}/reports/transactions`, () => {
     return HttpResponse.json(noTransaction, { status: 200 });
   }),
-
-  // http.all(`*`, ({ request }) => {
-  //   console.error(`All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`);
-  //   return HttpResponse.json(
-  //     { msg: `All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}` },
-  //     { status: 404 }
-  //   );
-  // }),
-  // http.get(`https://giftcards-sandbox.reloadly.com/products?productName=visa&productCategoryId=1`, () => {
-  //   return HttpResponse.json({ content: [bestCard] });
-  // }),
-
-  // http.get(`https://giftcards-sandbox.reloadly.com/products**`, () => {
-  //   return HttpResponse.json([]);
-  // }),
-  // http.get(`https://giftcards-sandbox.reloadly.com/products/18598`, () => {
-  //   return HttpResponse.json(bestCard);
-  // }),
 ];
