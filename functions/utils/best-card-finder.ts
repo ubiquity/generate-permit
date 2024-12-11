@@ -4,7 +4,7 @@ import { isGiftCardAvailable } from "../../shared/helpers";
 import { GiftCard } from "../../shared/types";
 import { commonHeaders, getGiftCards, getReloadlyApiBaseUrl } from "./shared";
 import { getGiftCardById } from "../post-order";
-import { fallbackIntlMastercard, fallbackIntlVisa, masterCardIntlSkus, visaIntlSkus } from "./reloadly-lists";
+import { fallbackIntlMastercardFirst, fallbackIntlMastercardSecond, fallbackIntlVisa, masterCardIntlSkus, visaIntlSkus } from "./reloadly-lists";
 import { AccessToken, ReloadlyFailureResponse } from "./types";
 
 export async function findBestCard(countryCode: string, amount: BigNumberish, accessToken: AccessToken): Promise<GiftCard | null> {
@@ -55,9 +55,14 @@ async function findBestMastercard(masterCards: GiftCard[], countryCode: string, 
     }
   }
 
-  const fallbackMastercard = await getFallbackIntlMastercard(accessToken);
-  if (fallbackMastercard && isGiftCardAvailable(fallbackMastercard, amount)) {
-    return fallbackMastercard;
+  const fallbackMastercardFirst = await getFirstFallbackIntlMastercard(accessToken);
+  if (fallbackMastercardFirst && isGiftCardAvailable(fallbackMastercardFirst, amount)) {
+    return fallbackMastercardFirst;
+  }
+
+  const fallbackMastercardSecond = await getSecondFallbackIntlMastercard(accessToken);
+  if (fallbackMastercardSecond && isGiftCardAvailable(fallbackMastercardSecond, amount)) {
+    return fallbackMastercardSecond;
   }
 
   return null;
@@ -78,11 +83,20 @@ async function findBestVisaCard(visaCards: GiftCard[], countryCode: string, amou
   }
   return null;
 }
-async function getFallbackIntlMastercard(accessToken: AccessToken): Promise<GiftCard | null> {
+async function getFirstFallbackIntlMastercard(accessToken: AccessToken): Promise<GiftCard | null> {
   try {
-    return await getGiftCardById(fallbackIntlMastercard.sku, accessToken);
+    return await getGiftCardById(fallbackIntlMastercardFirst.sku, accessToken);
   } catch (e) {
-    console.error(`Failed to load international US mastercard: ${JSON.stringify(fallbackIntlMastercard)}`, e);
+    console.error(`Failed to load international US mastercard: ${JSON.stringify(fallbackIntlMastercardFirst)}`, e);
+    return null;
+  }
+}
+
+async function getSecondFallbackIntlMastercard(accessToken: AccessToken): Promise<GiftCard | null> {
+  try {
+    return await getGiftCardById(fallbackIntlMastercardSecond.sku, accessToken);
+  } catch (e) {
+    console.error(`Failed to load international US mastercard: ${JSON.stringify(fallbackIntlMastercardSecond)}`, e);
     return null;
   }
 }

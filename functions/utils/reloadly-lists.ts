@@ -1,14 +1,14 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 // Keep duplicate country names in different lists
 
-export const fallbackIntlMastercard = {
+export const fallbackIntlMastercardFirst = {
   country: "United States",
   countryCode: "US",
   name: "Mastercard Prepaid USD Debit (Virtual only) US",
   sku: 18732,
 };
 
-export const fallbackIntlMastercardOld = {
+export const fallbackIntlMastercardSecond = {
   country: "United States",
   countryCode: "US",
   name: "Virtual MasterCard International USD US",
