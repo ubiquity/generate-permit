@@ -7,7 +7,6 @@ import card18732 from "./post-order/card-18732.json";
 import card18598 from "./get-best-card/card-18598.json";
 import noCardMt from "./get-best-card/no-card-mt.json";
 import transaction from "./get-order/transaction.json";
-
 import noTransaction from "./get-order/no-transaction.json";
 import transaction0x33f4 from "./get-redeem-code/transaction-0x33f4.json";
 import card from "./get-redeem-code/card.json";
@@ -21,6 +20,9 @@ import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_UR
 export const httpMocks = [
   http.post(RELOADLY_AUTH_URL, () => {
     return HttpResponse.json({ access_token: "fooBar" });
+  }),
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18732`, () => {
+    return HttpResponse.json(card18732, { status: 200 });
   }),
   http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18597`, () => {
     return HttpResponse.json(card18597, { status: 200 });
