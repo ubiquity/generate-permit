@@ -95,6 +95,15 @@
   font-size: 24px;
   color: #fff;
 }
+.redeem-info {
+  width: 100%;
+}
+.redeem-info fieldset {
+  min-width: 0;
+}
+.redeem-info fieldset a {
+  overflow-wrap: break-word;
+}
 .redeem-info p {
   text-transform: none;
 }
@@ -104,6 +113,10 @@
 }
 .redeem-info fieldset .instructions {
   padding: 12px;
+}
+
+.redeem-info fieldset .instructions p#verbose.hidden {
+  display: none;
 }
 
 .btn[data-loading="true"] > .icon {
