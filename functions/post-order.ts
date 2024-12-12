@@ -97,7 +97,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
       return Response.json({ message: "The permit has already claimed a gift card." }, { status: 400 });
     }
 
-    const order = await orderGiftCard(productId, giftCardValue, orderId, accessToken);
+    const order = await orderGiftCard(txReceipt.from.toLowerCase(), productId, giftCardValue, orderId, accessToken);
 
     if (order.status != "REFUNDED" && order.status != "FAILED") {
       return Response.json(order, { status: 200 });
@@ -138,7 +138,13 @@ export async function getGiftCardById(productId: number, accessToken: AccessToke
   return responseJson as GiftCard;
 }
 
-async function orderGiftCard(productId: number, cardValue: number, identifier: string, accessToken: AccessToken): Promise<ReloadlyOrderResponse> {
+async function orderGiftCard(
+  userId: string,
+  productId: number,
+  cardValue: number,
+  identifier: string,
+  accessToken: AccessToken
+): Promise<ReloadlyOrderResponse> {
   const url = `${getReloadlyApiBaseUrl(accessToken.isSandbox)}/orders`;
   console.log(`Placing order at url: ${url}`);
 
@@ -148,6 +154,9 @@ async function orderGiftCard(productId: number, cardValue: number, identifier: s
     unitPrice: cardValue.toFixed(2),
     customIdentifier: identifier,
     preOrder: false,
+    productAdditionalRequirements: {
+      userId: userId,
+    },
   });
 
   console.log(`Placing order at url: ${url}`);
