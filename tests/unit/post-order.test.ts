@@ -27,6 +27,7 @@ import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocke
 import receiptUusd from "../fixtures/post-order/receipt-tx-uusd.json";
 import receiptGeneric from "../fixtures/post-order/receipt.json";
 import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import * as constant from "../../shared/constants";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
@@ -43,6 +44,8 @@ describe("Post order for a payment card", () => {
     } catch (e) {
       console.log(`Error starting msw server: ${e}`);
     }
+    // Fixture use wxdai token for reward
+    constant.chainIdToRewardTokenMap[31337] = constant.Tokens.WXDAI;
   });
 
   beforeEach(async () => {
@@ -430,8 +433,9 @@ describe("Post order for a payment card", () => {
     const eventCtx = createEventContext(request, execContext, true);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
-    expect(response.status).toBe(200);
+
     expect(await response.json()).toEqual(orderCard13959);
+    expect(response.status).toBe(200);
   });
 
   it("should post order on sandbox", async () => {
@@ -451,8 +455,9 @@ describe("Post order for a payment card", () => {
     const eventCtx = createEventContext(request, execContext, true);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
-    expect(response.status).toBe(200);
+
     expect(await response.json()).toEqual(orderCard13959);
+    expect(response.status).toBe(200);
   });
 });
 
