@@ -23,6 +23,13 @@ export const chainIdToRewardTokenMap: Record<number, string> = {
   31337: Tokens.UUSD,
 };
 
+export const networkRpcs: Record<number, string> = {
+  1: "https://gateway.tenderly.co/public/mainnet",
+  5: "https://eth-goerli.public.blastapi.io",
+  100: "https://rpc.gnosischain.com",
+  31337: "http://127.0.0.1:8545",
+};
+
 export const chainIdToNameMap: Record<number, string> = {
   1: "Ethereum",
   5: "Goerli Testnet",
