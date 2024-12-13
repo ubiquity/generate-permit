@@ -13,7 +13,7 @@ import minedTxTooLow from "../fixtures/post-order/mined-tx-too-low.json";
 import minedTxUusd from "../fixtures/post-order/mined-tx-uusd.json";
 import minedTxGeneric from "../fixtures/post-order/mined-tx.json";
 import orderCard13959 from "../fixtures/post-order/order-card-13959.json";
-import orderCard18597 from "../fixtures/post-order/order-card-18597.json";
+import orderCard18732 from "../fixtures/post-order/order-card-18732.json";
 import parsedTxUusdWrongMethod from "../fixtures/post-order/parsed-tx-uusd-wrong-method.json";
 import parsedTxUusdWrongTreasury from "../fixtures/post-order/parsed-tx-uusd-wrong-treasury.json";
 import parsedTxWrongMethod from "../fixtures/post-order/parsed-tx-wrong-method.json";
@@ -27,6 +27,7 @@ import receiptTxForMockedParse from "../fixtures/post-order/receipt-tx-for-mocke
 import receiptUusd from "../fixtures/post-order/receipt-tx-uusd.json";
 import receiptGeneric from "../fixtures/post-order/receipt.json";
 import { createEventContext, TESTS_BASE_URL } from "./shared-utils";
+import * as constant from "../../shared/constants";
 
 describe("Post order for a payment card", () => {
   let server: SetupServerApi;
@@ -43,6 +44,8 @@ describe("Post order for a payment card", () => {
     } catch (e) {
       console.log(`Error starting msw server: ${e}`);
     }
+    // Fixture use wxdai token for reward
+    constant.chainIdToRewardTokenMap[31337] = constant.Tokens.WXDAI;
   });
 
   beforeEach(async () => {
@@ -66,17 +69,17 @@ describe("Post order for a payment card", () => {
         type: "permit",
         chainId: 31337,
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
-        productId: 18597,
+        productId: 18732,
         country: "US",
-        signedMessage: "0x054114b71b08d0dbe6639a4810169a45591c96ebbba94f7540e1696499dd179418fe58c6e254fe84a99d19a04a502eefc990f88f8352a528f70cd54fe3a71a0b1c",
+        signedMessage: "0xab1c86111f7f5062ac0c0d44e7008c20cd92f3455aaf026ca0a53838a3dfa4b77e088ae5faa0ee0ceab31340986dcd9cb031001e5d730f730c52c1c4cfb3de0a1b",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
     const eventCtx = createEventContext(request, execContext);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
+    expect(await response.json()).toEqual(orderCard18732);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(orderCard18597);
   });
 
   it("should return err for ordering card that is not best suited", async () => {
@@ -87,9 +90,9 @@ describe("Post order for a payment card", () => {
         type: "permit",
         chainId: 31337,
         txHash: "0xac3485ce523faa13970412a89ef42d10939b44abd33cbcff1ed84cb566a3a3d5",
-        productId: 18732,
+        productId: 18597,
         country: "US",
-        signedMessage: "0xab1c86111f7f5062ac0c0d44e7008c20cd92f3455aaf026ca0a53838a3dfa4b77e088ae5faa0ee0ceab31340986dcd9cb031001e5d730f730c52c1c4cfb3de0a1b",
+        signedMessage: "0x054114b71b08d0dbe6639a4810169a45591c96ebbba94f7540e1696499dd179418fe58c6e254fe84a99d19a04a502eefc990f88f8352a528f70cd54fe3a71a0b1c",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
 
@@ -342,7 +345,7 @@ describe("Post order for a payment card", () => {
         type: uusd,
         chainId: 31337,
         txHash: "0xdf1bf8b6d679e406f43b57692a2dcbb450e38d5de72e5199d836b701d0a4306f",
-        productId: 18597,
+        productId: 18732,
         country: "US",
       }),
     }) as Request<unknown, IncomingRequestCfProperties<unknown>>;
@@ -351,7 +354,7 @@ describe("Post order for a payment card", () => {
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(orderCard18597);
+    expect(await response.json()).toEqual(orderCard18732);
   });
 
   it("should return err with uusd for unsupported chain", async () => {
@@ -430,8 +433,9 @@ describe("Post order for a payment card", () => {
     const eventCtx = createEventContext(request, execContext, true);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
-    expect(response.status).toBe(200);
+
     expect(await response.json()).toEqual(orderCard13959);
+    expect(response.status).toBe(200);
   });
 
   it("should post order on sandbox", async () => {
@@ -451,8 +455,9 @@ describe("Post order for a payment card", () => {
     const eventCtx = createEventContext(request, execContext, true);
     const response = await pagesFunction(eventCtx);
     await waitOnExecutionContext(execContext);
-    expect(response.status).toBe(200);
+
     expect(await response.json()).toEqual(orderCard13959);
+    expect(response.status).toBe(200);
   });
 });
 

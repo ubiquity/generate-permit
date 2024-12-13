@@ -7,23 +7,22 @@ import card18732 from "./post-order/card-18732.json";
 import card18598 from "./get-best-card/card-18598.json";
 import noCardMt from "./get-best-card/no-card-mt.json";
 import transaction from "./get-order/transaction.json";
-
 import noTransaction from "./get-order/no-transaction.json";
 import transaction0x33f4 from "./get-redeem-code/transaction-0x33f4.json";
 import card from "./get-redeem-code/card.json";
 import orderCard13959 from "./post-order/order-card-13959.json";
-import orderCard18597 from "./post-order/order-card-18597.json";
+import orderCard18732 from "./post-order/order-card-18732.json";
 import { RELOADLY_AUTH_URL, RELOADLY_PRODUCTION_API_URL, RELOADLY_SANDBOX_API_URL } from "../../functions/utils/shared";
 
 /**
  * Intercepts the routes and returns a custom payload
  */
 export const httpMocks = [
-  // http.get(`${getBaseUrl(true)}/products**`, () => {
-  //   return HttpResponse.json(bestCard);
-  // }),
   http.post(RELOADLY_AUTH_URL, () => {
     return HttpResponse.json({ access_token: "fooBar" });
+  }),
+  http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18732`, () => {
+    return HttpResponse.json(card18732, { status: 200 });
   }),
   http.get(`${RELOADLY_PRODUCTION_API_URL}/products/18597`, () => {
     return HttpResponse.json(card18597, { status: 200 });
@@ -74,7 +73,7 @@ export const httpMocks = [
   }),
 
   http.post(`${RELOADLY_PRODUCTION_API_URL}/orders`, () => {
-    return HttpResponse.json(orderCard18597, { status: 200 });
+    return HttpResponse.json(orderCard18732, { status: 200 });
   }),
   http.post(`${RELOADLY_SANDBOX_API_URL}/orders`, () => {
     return HttpResponse.json(orderCard13959, { status: 200 });
@@ -95,22 +94,4 @@ export const httpMocks = [
   http.get(`${RELOADLY_SANDBOX_API_URL}/reports/transactions`, () => {
     return HttpResponse.json(noTransaction, { status: 200 });
   }),
-
-  // http.all(`*`, ({ request }) => {
-  //   console.error(`All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}`);
-  //   return HttpResponse.json(
-  //     { msg: `All http requests are expected to be mocked in unit tests. Following request was not mocked. ${request.url}` },
-  //     { status: 404 }
-  //   );
-  // }),
-  // http.get(`https://giftcards-sandbox.reloadly.com/products?productName=visa&productCategoryId=1`, () => {
-  //   return HttpResponse.json({ content: [bestCard] });
-  // }),
-
-  // http.get(`https://giftcards-sandbox.reloadly.com/products**`, () => {
-  //   return HttpResponse.json([]);
-  // }),
-  // http.get(`https://giftcards-sandbox.reloadly.com/products/18598`, () => {
-  //   return HttpResponse.json(bestCard);
-  // }),
 ];

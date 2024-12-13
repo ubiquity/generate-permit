@@ -8,8 +8,14 @@ export function getGiftCardActivateInfoHtml(giftCard: GiftCard) {
       <fieldset>
         <legend>How to use redeem code?</legend>
         <div class="instructions">
-          <p>${giftCard.redeemInstruction.concise}</p>
-          ${giftCard.redeemInstruction.concise != giftCard.redeemInstruction.verbose ? `<p>${giftCard.redeemInstruction.verbose}</p>` : ``}
+          <p
+            >${giftCard.redeemInstruction.concise.replace("\n", "<br>")}
+            ${giftCard.redeemInstruction.concise != giftCard.redeemInstruction.verbose
+              ? `<a href="javascript:;" onclick="document.getElementById('verbose').classList.remove('hidden');this.remove();">...Read more</a>`
+              : ``}</p
+          >
+
+          <p id="verbose" class="hidden">${giftCard.redeemInstruction.verbose.replace("\n", "<br>")}</p>
         </div>
       </fieldset>
     </div>
