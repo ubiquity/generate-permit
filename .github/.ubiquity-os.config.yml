@@ -234,6 +234,14 @@ plugins:
           reviewDelayTolerance: "3 Days"
           taskStaleTimeoutDuration: "30 Days"
           startRequiresWallet: true # default is true
-          requiredLabelsToStart: ["Priority: 3 (High)", "Priority: 4 (Urgent)", "Priority: 5 (Emergency)"]
+          requiredLabelsToStart:
+            - name: "Priority: 1 (Normal)"
+            - name: "Priority: 2 (Medium)"
+            - name: "Priority: 3 (High)"
+              roles: ['collaborator', 'admin']
+            - name: "Priority: 4 (Urgent)"
+              roles: ['collaborator', 'admin']
+            - name: "Priority: 5 (Emergency)"
+              roles: ['collaborator', 'admin']
   - uses:
       - plugin: ubiquity-os-marketplace/text-vector-embeddings@main
