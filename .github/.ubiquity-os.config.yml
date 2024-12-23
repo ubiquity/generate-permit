@@ -1,5 +1,20 @@
 plugins:
   - uses:
+      - plugin: https://ubiquity-os-command-start-stop-main.ubiquity.workers.dev
+        with:
+          reviewDelayTolerance: "3 Days"
+          taskStaleTimeoutDuration: "30 Days"
+          startRequiresWallet: true # default is true
+          requiredLabelsToStart:
+            - name: "Priority: 1 (Normal)"
+            - name: "Priority: 2 (Medium)"
+            - name: "Priority: 3 (High)"
+              roles: ['collaborator', 'admin']
+            - name: "Priority: 4 (Urgent)"
+              roles: ['collaborator', 'admin']
+            - name: "Priority: 5 (Emergency)"
+              roles: ['collaborator', 'admin']
+  - uses:
       - plugin: https://ubiquity-os-command-wallet-main.ubiquity.workers.dev
         with:
           registerWalletWithVerification: false
@@ -228,20 +243,5 @@ plugins:
               - launch-party
               - staging
               - production
-  - uses:
-      - plugin: https://ubiquity-os-command-start-stop-main.ubiquity.workers.dev
-        with:
-          reviewDelayTolerance: "3 Days"
-          taskStaleTimeoutDuration: "30 Days"
-          startRequiresWallet: true # default is true
-          requiredLabelsToStart:
-            - name: "Priority: 1 (Normal)"
-            - name: "Priority: 2 (Medium)"
-            - name: "Priority: 3 (High)"
-              roles: ['collaborator', 'admin']
-            - name: "Priority: 4 (Urgent)"
-              roles: ['collaborator', 'admin']
-            - name: "Priority: 5 (Emergency)"
-              roles: ['collaborator', 'admin']
   - uses:
       - plugin: ubiquity-os-marketplace/text-vector-embeddings@main
