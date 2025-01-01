@@ -462,11 +462,6 @@ describe("Post order for a payment card", () => {
 });
 
 async function initMocks(receipt: object = receiptGeneric, minedTx: object = minedTxGeneric, parsedTx?: object) {
-  const helpers = await import("../../shared/helpers");
-  vi.spyOn(helpers, "getFastestRpcUrl").mockImplementation(async () => {
-    return "http://127.0.0.1:8545";
-  });
-
   const providers = await import("@ethersproject/providers");
   vi.spyOn(providers.JsonRpcProvider.prototype, "getTransactionReceipt").mockImplementationOnce(async () => {
     return receipt as TransactionReceipt;
