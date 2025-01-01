@@ -46,6 +46,6 @@ export async function useRpcHandler(networkId: number) {
     return provider;
   } catch (e) {
     console.log(`RpcHandler is having issues. Error: ${e} \nUsing backup rpc.`);
-    return new JsonRpcProvider(networkRpcs[networkId]);
+    return new JsonRpcProvider({ url: networkRpcs[networkId], skipFetchSetup: true });
   }
 }
