@@ -1,5 +1,4 @@
 import { BigNumberish, ethers } from "ethers";
-import { useRpcHandler } from "../static/scripts/rewards/web3/use-rpc-handler";
 import { isRangePriceGiftCardClaimable } from "./pricing";
 import { GiftCard } from "./types";
 
@@ -26,11 +25,6 @@ export function getMintMessageToSign(type: "permit" | "ubiquity-dollar", chainId
     productId,
     country,
   });
-}
-
-export async function getFastestRpcUrl(networkId: number) {
-  const provider = await useRpcHandler(networkId);
-  return provider.connection.url;
 }
 
 export function isGiftCardAvailable(giftCard: GiftCard, reward: BigNumberish): boolean {
