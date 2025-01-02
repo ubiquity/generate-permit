@@ -8,7 +8,7 @@ import { supabase } from "../render-transaction/read-claim-data-from-url";
 import { buttonController, getMakeClaimButton, viewClaimButton } from "../button-controller";
 import { toaster, errorToast, MetaMaskError } from "../toaster";
 import { connectWallet } from "./connect-wallet";
-import { convertToNetworkId } from "./use-rpc-handler";
+import { convertToNetworkId } from "../../../../shared/use-rpc-handler";
 
 export async function fetchTreasury(permit: Permit): Promise<{ balance: BigNumber; allowance: BigNumber; decimals: number; symbol: string }> {
   let balance: BigNumber, allowance: BigNumber, decimals: number, symbol: string;

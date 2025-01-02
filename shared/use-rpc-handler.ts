@@ -1,5 +1,5 @@
 import { RPCHandler, HandlerConstructorConfig, NetworkId } from "@ubiquity-dao/rpc-handler";
-import { networkRpcs } from "../../../../shared/constants";
+import { networkRpcs } from "./constants";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 export function convertToNetworkId(networkId: number | string): NetworkId {

@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { toaster } from "../toaster";
 import { buttonController } from "../button-controller";
 import { app } from "../app-state";
-import { useHandler } from "../web3/use-rpc-handler";
+import { useHandler } from "../../../../shared/use-rpc-handler";
 
 function checkMobile(a: string) {
   // cspell:disable

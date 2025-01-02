@@ -17,7 +17,7 @@ import { getGiftCardValue, isClaimableForAmount } from "../shared/pricing";
 import { ExchangeRate, GiftCard } from "../shared/types";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
 import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
-import { useRpcHandler } from "../static/scripts/rewards/web3/use-rpc-handler";
+import { useRpcHandler } from "../shared/use-rpc-handler";
 import { getTransactionFromOrderId } from "./get-order";
 import { findBestCard } from "./utils/best-card-finder";
 import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
