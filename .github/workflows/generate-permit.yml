@@ -6,6 +6,9 @@ on:
       beneficiary:
         required: true
         description: The address of the beneficiary's wallet
+      amount:
+        required: true
+        description: The amount of permit
       evmPrivateEncrypted:
         required: true
         description: Ubiquibot's Private Key
@@ -30,7 +33,7 @@ jobs:
         env:
           BENEFICIARY_ADDRESS: ${{ github.event.inputs.beneficiary }}
           PAYMENT_TOKEN_ADDRESS: "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068"
-          AMOUNT_IN_ETH: 7
+          AMOUNT_IN_ETH: ${{ github.event.inputs.amount }}
           CHAIN_ID: 100
           FRONTEND_URL: "http://localhost:8080"
           RPC_PROVIDER_URL: "https://rpc.ankr.com/gnosis"
