@@ -56,7 +56,7 @@ jobs:
         env:
           BENEFICIARY_ADDRESS: "0xefC0e701A824943b469a694aC564Aa1efF7Ab7dd"
           PAYMENT_TOKEN_ADDRESS: "0xC6ed4f520f6A4e4DC27273509239b7F8A68d2068"
-          AMOUNT_IN_ETH: 7
+          AMOUNT_IN_ETH: 30
           CHAIN_ID: 100
           FRONTEND_URL: "${{ env.DEPLOYMENT_URL }}"
           RPC_PROVIDER_URL: "https://rpc.ankr.com/gnosis"
