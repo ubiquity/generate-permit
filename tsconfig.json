@@ -9,7 +9,7 @@
     "cypress.config.ts",
     "static/**/*.ts",
     ".github/**/*.ts",
-    "vitest.config.ts"
+    "configs/**/*.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
