@@ -7,10 +7,10 @@ export default defineWorkersConfig({
     alias: [{ find: "msw/node", replacement: "/node_modules/msw/lib/native/index.mjs" }],
   },
   test: {
-    dir: "./tests/unit",
+    dir: "tests/unit",
     poolOptions: {
       workers: {
-        wrangler: { configPath: "../tests/wrangler-vitest.toml" },
+        wrangler: { configPath: "./tests/wrangler-vitest.toml" },
       },
     },
   },
