@@ -20,7 +20,7 @@
     "utils:get-invalidate-params": "forge script --via-ir scripts/solidity/GetInvalidateNonceParams.s.sol",
     "format:lint": "eslint --fix .",
     "format:prettier": "prettier --write .",
-    "format:cspell": "cspell --config configs/.cspell.json **/*",
+    "format:cspell": "cspell **/*",
     "postinstall": "git submodule update --init --recursive",
     "test:anvil": "tsx cypress/scripts/anvil.ts",
     "test:start": "yarn start",
