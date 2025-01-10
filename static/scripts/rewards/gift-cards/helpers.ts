@@ -1,8 +1,9 @@
 import ct from "countries-and-timezones";
 
+declare const BACKEND_URL: string;
+
 export function getApiBaseUrl() {
-  // specify when backend functions and frontend are deployed to a different URL
-  return "";
+  return BACKEND_URL;
 }
 
 async function getCountryCodeByIp() {
