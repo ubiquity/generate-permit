@@ -13,7 +13,7 @@ A vanilla Typescript dApp for claiming Ubiquity Rewards. It also includes tools 
   # Common variables
   CHAIN_ID="31337"
   FRONTEND_URL="http://localhost:8080"
-  BACKEND_URL="/" # if you want to work on frontend only, use "https://pay.ubq.fi"
+  BACKEND_URL="" # "" or if you want to work on frontend only, use "https://pay.ubq.fi"
   UBIQUIBOT_PRIVATE_KEY="0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
   RPC_PROVIDER_URL="http://127.0.0.1:8545"
   PAYMENT_TOKEN_ADDRESS="0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"
