@@ -133,8 +133,8 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          RELOADLY_API_CLIENT_ID: ${{ secrets.SUPABASE_URL }}
-          RELOADLY_API_CLIENT_SECRET: ${{ secrets.SUPABASE_KEY }}
+          RELOADLY_API_CLIENT_ID: ${{ secrets.RELOADLY_API_CLIENT_ID }}
+          RELOADLY_API_CLIENT_SECRET: ${{ secrets.RELOADLY_API_CLIENT_SECRET }}
           RELOADLY_SANDBOX_API_CLIENT_ID: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_ID }}
           RELOADLY_SANDBOX_API_CLIENT_SECRET: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_SECRET }}
         run: bash .github/sync-env-vars.sh
