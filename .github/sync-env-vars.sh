@@ -30,7 +30,7 @@ curl -X PATCH \
             "type": "text"
           },
           "RELOADLY_API_CLIENT_ID": {
-            "value": "'"${RELOADLY_API_CLIENT_ID}"'",
+            "value": "'${RELOADLY_API_CLIENT_ID}'",
             "type": "secret_text"
           },
           "RELOADLY_API_CLIENT_SECRET": {
@@ -38,7 +38,7 @@ curl -X PATCH \
             "type": "secret_text"
           }
         }
-      }
+      },
       "preview": {
         "env_vars": {
           "USE_RELOADLY_SANDBOX": {

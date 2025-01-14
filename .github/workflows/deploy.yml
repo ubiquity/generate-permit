@@ -37,6 +37,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Make env sync script executable
+        run: chmod +x .github/sync-env-vars.sh
+
+      - name: Run env sync script script
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          RELOADLY_API_CLIENT_ID: ${{ secrets.RELOADLY_API_CLIENT_ID }}
+          RELOADLY_API_CLIENT_SECRET: ${{ secrets.RELOADLY_API_CLIENT_SECRET }}
+          RELOADLY_SANDBOX_API_CLIENT_ID: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_ID }}
+          RELOADLY_SANDBOX_API_CLIENT_SECRET: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_SECRET }}
+        run: bash .github/sync-env-vars.sh
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -117,24 +131,3 @@ jobs:
                 body
               });
             }
-
-  update_env_secrets_in_cloudflare:
-    name: Update environment secrets in Cloudflare
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Make script executable
-        run: chmod +x .github/sync-env-vars.sh
-
-      - name: Run sync environment variables script
-        env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          RELOADLY_API_CLIENT_ID: ${{ secrets.RELOADLY_API_CLIENT_ID }}
-          RELOADLY_API_CLIENT_SECRET: ${{ secrets.RELOADLY_API_CLIENT_SECRET }}
-          RELOADLY_SANDBOX_API_CLIENT_ID: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_ID }}
-          RELOADLY_SANDBOX_API_CLIENT_SECRET: ${{ secrets.RELOADLY_SANDBOX_API_CLIENT_SECRET }}
-        run: bash .github/sync-env-vars.sh
