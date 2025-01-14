@@ -30,7 +30,7 @@ curl -X PATCH \
             "type": "plain_text"
           },
           "RELOADLY_API_CLIENT_ID": {
-            "value": "'${RELOADLY_API_CLIENT_ID}'",
+            "value": "'"${RELOADLY_API_CLIENT_ID}"'",
             "type": "secret_text"
           },
           "RELOADLY_API_CLIENT_SECRET": {
