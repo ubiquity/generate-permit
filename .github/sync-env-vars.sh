@@ -18,7 +18,7 @@ echo "Repository name: $REPOSITORY_NAME"
 
 # Make the API call to Cloudflare
 curl -X PATCH \
-  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${REPOSITORY_NAME}/deployment_configs" \
+  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/pay-ubq-fi-deploy-test/deployment_configs" \
   -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
   -H "Content-Type: application/json" \
   --data '{
