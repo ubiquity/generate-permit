@@ -157,6 +157,7 @@ async function orderGiftCard(
     productAdditionalRequirements: {
       userId: userId,
     },
+    senderName: "Ubiquity",
   });
 
   console.log(`Placing order at url: ${url}`);
