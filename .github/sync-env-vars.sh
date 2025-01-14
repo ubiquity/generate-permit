@@ -18,7 +18,7 @@ echo "Repository name: $REPOSITORY_NAME"
 
 # Make the API call to Cloudflare
 curl -X PATCH \
-  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/pay-ubq-fi-deploy-test/deployment_configs" \
+  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${REPOSITORY_NAME}/deployment_configs" \
   -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
   -H "Content-Type: application/json" \
   --data '{
@@ -27,7 +27,7 @@ curl -X PATCH \
         "env_vars": {
           "USE_RELOADLY_SANDBOX": {
             "value": "false",
-            "type": "text"
+            "type": "plain_text"
           },
           "RELOADLY_API_CLIENT_ID": {
             "value": "'${RELOADLY_API_CLIENT_ID}'",
@@ -43,7 +43,7 @@ curl -X PATCH \
         "env_vars": {
           "USE_RELOADLY_SANDBOX": {
             "value": "true",
-            "type": "text"
+            "type": "plain_text"
           },
           "RELOADLY_API_CLIENT_ID": {
             "value": "'"${RELOADLY_SANDBOX_API_CLIENT_ID}"'",
