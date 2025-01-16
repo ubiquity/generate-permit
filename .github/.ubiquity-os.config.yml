@@ -9,11 +9,11 @@ plugins:
             - name: "Priority: 1 (Normal)"
             - name: "Priority: 2 (Medium)"
             - name: "Priority: 3 (High)"
-              roles: ['collaborator', 'admin']
+              role: ['collaborator', 'admin']
             - name: "Priority: 4 (Urgent)"
-              roles: ['collaborator', 'admin']
+              role: ['collaborator', 'admin']
             - name: "Priority: 5 (Emergency)"
-              roles: ['collaborator', 'admin']
+              role: ['collaborator', 'admin']
   - uses:
       - plugin: https://ubiquity-os-command-wallet-main.ubiquity.workers.dev
         with:
@@ -72,7 +72,7 @@ plugins:
               enabled: true
             formattingEvaluator:
               multipliers:
-                - roles:
+                - role:
                     - PULL_SPECIFICATION
                   multiplier: 1
                   rewards:
@@ -138,7 +138,7 @@ plugins:
                       ol:
                         score: 1
                         countWords: true
-                - roles:
+                - role:
                     - ISSUE_SPECIFICATION
                     - ISSUE_AUTHOR
                     - ISSUE_ASSIGNEE
@@ -211,7 +211,7 @@ plugins:
                       ol:
                         score: 1
                         countWords: true
-                - roles:
+                - role:
                     - PULL_AUTHOR
                   multiplier: 0
                   rewards:
