@@ -164,7 +164,7 @@ BACKEND_URL="https://pay.ubq.fi"
 RPC_PROVIDER_URL="https://rpc.gnosischain.com"
 ```
 
-In this case, the main production deploy of the backend is served to your frontend and you can change things in frontend without worrying about backend.
+In this case, the production deploy of the backend is served to your frontend and you can change things in the frontend.
 
 There are some `/shared` files for frontend & backend. To make sure you didn't break anything in backend, you should occasionally run
 `yarn test:unit`
