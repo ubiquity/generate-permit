@@ -6,7 +6,8 @@
   "author": "Ubiquity DAO",
   "license": "MIT",
   "engines": {
-    "node": "20.10.0"
+    "node": "20.10.0",
+    "yarn": "^1.22.21"
   },
   "scripts": {
     "start": "run-s start:sign serve:watch",

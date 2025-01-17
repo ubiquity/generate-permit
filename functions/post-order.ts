@@ -1,20 +1,28 @@
-import { JsonRpcProvider, TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
+import { Interface, TransactionDescription } from "@ethersproject/abi";
+import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { verifyMessage } from "@ethersproject/wallet";
 import { BigNumber } from "ethers";
-import { Interface, TransactionDescription } from "@ethersproject/abi";
-import { Tokens, chainIdToRewardTokenMap, giftCardTreasuryAddress, permit2Address } from "../shared/constants";
-import { getFastestRpcUrl, getGiftCardOrderId, getMintMessageToSign } from "../shared/helpers";
+import { PostOrderParams, postOrderParamsSchema } from "../shared/api-types";
+import {
+  Tokens,
+  chainIdToRewardTokenMap,
+  giftCardTreasuryAddress,
+  permit2Address,
+  permitAllowedChainIds,
+  ubiquityDollarAllowedChainIds,
+  ubiquityDollarChainAddresses,
+} from "../shared/constants";
+import { getGiftCardOrderId, getMintMessageToSign } from "../shared/helpers";
 import { getGiftCardValue, isClaimableForAmount } from "../shared/pricing";
 import { ExchangeRate, GiftCard } from "../shared/types";
-import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
 import { erc20Abi } from "../static/scripts/rewards/abis/erc20-abi";
+import { permit2Abi } from "../static/scripts/rewards/abis/permit2-abi";
+import { useRpcHandler } from "../shared/use-rpc-handler";
 import { getTransactionFromOrderId } from "./get-order";
+import { findBestCard } from "./utils/best-card-finder";
 import { commonHeaders, getAccessToken, getReloadlyApiBaseUrl } from "./utils/shared";
 import { AccessToken, Context, ReloadlyFailureResponse, ReloadlyOrderResponse } from "./utils/types";
 import { validateEnvVars, validateRequestMethod } from "./utils/validators";
-import { PostOrderParams, postOrderParamsSchema } from "../shared/api-types";
-import { permitAllowedChainIds, ubiquityDollarAllowedChainIds, ubiquityDollarChainAddresses } from "../shared/constants";
-import { findBestCard } from "./utils/best-card-finder";
 
 export async function onRequest(ctx: Context): Promise<Response> {
   try {
@@ -29,15 +37,7 @@ export async function onRequest(ctx: Context): Promise<Response> {
     }
     const { type, productId, txHash, chainId, country } = result.data;
 
-    const fastestRpcUrl = await getFastestRpcUrl(chainId);
-
-    const provider = new JsonRpcProvider(
-      {
-        url: fastestRpcUrl,
-        skipFetchSetup: true,
-      },
-      chainId
-    );
+    const provider = await useRpcHandler(chainId);
 
     const [txReceipt, tx, giftCard]: [TransactionReceipt, TransactionResponse, GiftCard] = await Promise.all([
       provider.getTransactionReceipt(txHash),
@@ -157,6 +157,7 @@ async function orderGiftCard(
     productAdditionalRequirements: {
       userId: userId,
     },
+    senderName: "Ubiquity",
   });
 
   console.log(`Placing order at url: ${url}`);
